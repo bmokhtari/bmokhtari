@@ -1,5 +1,3 @@
-## Hi there 👋
-
 # Bilar Mokhtari
 
 ## Profile
@@ -13,14 +11,21 @@ Ambitious Software Engineering student at McGill University with a passion for i
 - Problem-Solving: Demonstrated ability to overcome technical challenges with creative solutions
 - Collaborative: Effective team player with strong communication skills
 
-### Notable Projects:
-- **Rent Advisor**: Developed a property rental platform with advanced mapping and scheduling features
-- **Agricultural Drone**: Implemented image processing and flight path optimization for crop analysis
-- **Hotel Reservation System**: Created a full-stack web application using Vue.js and Spring
+### Code Samples:
 
----
+#### Python (Data Analysis)
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
 
-[![GitHub followers](https://img.shields.io/github/followers/bmokhtari?label=Follow&style=social)](https://github.com/bmokhtari)
-[![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/bilarmokhtari/)](https://www.linkedin.com/in/bilarmokhtari/)
+# Load and analyze rental data
+df = pd.read_csv('rental_data.csv')
+avg_rent = df.groupby('neighborhood')['price'].mean()
 
-![Profile Views](https://komarev.com/ghpvc/?username=bmokhtari&color=blue)
+# Visualize results
+plt.figure(figsize=(10, 6))
+avg_rent.plot(kind='bar')
+plt.title('Average Rent by Neighborhood')
+plt.xlabel('Neighborhood')
+plt.ylabel('Average Rent ($)')
+plt.show()
