@@ -1,7 +1,5 @@
 ## Hi there 👋
 
-<!--
-**bmokhtari/bmokhtari** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 # Bilar Mokhtari
 
 ## Profile
