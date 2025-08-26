@@ -2,9 +2,14 @@
 
 A full-stack software engineering student from Canada  
 
-## 🦁 About Me:  
+## 🦁 About Me  
 
-I am a Software Engineering Co-Op student at McGill University, passionate about innovative technology solutions and applying cutting-edge technologies to solve real-world problems.  
+I’m a Software Engineering student at McGill University with a strong focus on full-stack development and building technology that makes an impact. Through my co-op at **RentAdvisor**, I’ve worked on core web features, integrations, and project leadership, gaining experience in turning early ideas into deployable products.  
+
+Beyond academics, I stay deeply involved in student communities. I served as **VP Internal of GameDev McGill** for 3 years, where I helped organize initiatives that connect students with the game industry, and I’m was an active member of **McGill Robotics**, contributing to the Mars Rover team. These roles have sharpened my leadership, collaboration, and project management skills.  
+
+I’m passionate about learning new technologies and applying them to solve real-world problems. My interests range from **web platforms and cloud infrastructure** to **robotics and embedded systems**, and I thrive in environments where innovation and teamwork intersect.  
+
 
 ## 🚀 What I'm Up To  
 
