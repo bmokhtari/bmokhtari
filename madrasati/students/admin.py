@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from finance.models import Payment
+from finance.models import DiscountRequest, Payment
 from .models import Attendance, Enrollment, Grade, Guardian, Student
 
 
@@ -61,6 +61,16 @@ class PaymentInline(admin.TabularInline):
     readonly_fields = ["receipt_number"]
 
 
+class DiscountRequestInline(admin.TabularInline):
+    model = DiscountRequest
+    extra = 0
+    fields = ["percentage", "scope", "start_month", "end_month", "reason",
+              "status", "decided_by"]
+    readonly_fields = ["status", "decided_by"]
+    verbose_name = _("demande de remise")
+    verbose_name_plural = _("demandes de remise")
+
+
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ["student", "school_class", "status", "tuition_plan",
@@ -70,7 +80,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
     search_fields = ["student__last_name", "student__first_name",
                      "student__massar_code"]
     autocomplete_fields = ["student", "school_class", "tuition_plan"]
-    inlines = [PaymentInline]
+    inlines = [DiscountRequestInline, PaymentInline]
 
 
 @admin.register(Attendance)

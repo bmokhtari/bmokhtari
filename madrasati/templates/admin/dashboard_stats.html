@@ -28,6 +28,15 @@
       <div class="m-tile-v num">{{ month_revenue|dh }}</div>
       <div class="m-tile-s">{% blocktranslate with total=year_revenue|dirhams %}{{ total }} DH depuis septembre{% endblocktranslate %}</div>
     </div>
+    <div class="m-tile{% if pending_discounts %} m-tile--flag{% endif %}">
+      <div class="m-tile-k">{% translate "Demandes de remise" %}</div>
+      <div class="m-tile-v num">
+        {% if pending_discounts %}
+          <a href="{% url 'admin:finance_discountrequest_changelist' %}?status__exact=pending">{{ pending_discounts }}</a>
+        {% else %}0{% endif %}
+      </div>
+      <div class="m-tile-s">{% translate "en attente d'approbation" %}</div>
+    </div>
     <div class="m-tile">
       <div class="m-tile-k">{% translate "Dernière paie" %}</div>
       <div class="m-tile-v num">{{ last_payroll_net|dh }}</div>

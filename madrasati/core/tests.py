@@ -56,3 +56,27 @@ class ProxiedLoginTests(TestCase):
             HTTP_X_FORWARDED_PROTO="https",
         )
         self.assertEqual(response.status_code, 403)
+
+
+class EmptyChangeListTests(TestCase):
+    """Une liste vide ne doit afficher ni cadre ni barre sans contenu."""
+
+    def setUp(self):
+        User.objects.create_superuser("directrice", "d@example.com", "motdepasse")
+        self.client.force_login(User.objects.get(username="directrice"))
+
+    def test_empty_list_shows_guidance_and_hides_empty_controls(self):
+        # Paiements : ce modèle a une navigation par date, qui laissait un
+        # trait vide en haut de la carte.
+        response = self.client.get("/admin/finance/payment/")
+        html = response.content.decode()
+        self.assertContains(response, "m-blank")
+        self.assertNotIn("toplinks", html)          # navigation par date
+        self.assertNotIn("changelist-search", html)
+        self.assertNotIn("changelist-filter", html)
+
+    def test_search_without_result_keeps_the_search_box(self):
+        response = self.client.get("/admin/finance/payment/", {"q": "introuvable"})
+        html = response.content.decode()
+        self.assertContains(response, "m-blank")
+        self.assertIn("changelist-search", html)    # pour corriger sa recherche

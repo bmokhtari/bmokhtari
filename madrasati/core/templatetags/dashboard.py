@@ -9,7 +9,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from core.models import AcademicYear, SchoolClass
-from finance.models import SCHOOL_MONTHS, Payment, expected_monthly_amount
+from finance.models import (SCHOOL_MONTHS, DiscountRequest, Payment,
+                            expected_monthly_amount)
 from hr.models import Employee, PayrollRun
 from students.models import Enrollment, Student
 
@@ -132,6 +133,8 @@ def dashboard_stats():
         "last_payroll": last_run,
         "last_payroll_net": last_run.total_net if last_run else 0,
         "late_rows": _late_enrollments(year, today),
+        "pending_discounts": DiscountRequest.objects.filter(
+            status=DiscountRequest.Status.PENDING).count(),
         "recent_payments": (Payment.objects
                             .select_related("enrollment__student")
                             .order_by("-date", "-id")[:5]),

@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% comment %}
+  Le thème est chargé dans « extrahead », rendu après « extrastyle » : les
+  gabarits de l'admin y ajoutent leurs propres feuilles (changelists.css,
+  forms.css…) qui, à spécificité égale, l'emportaient sur le thème.
+{% endcomment %}
+{% block extrahead %}{{ block.super }}
   <link rel="stylesheet" href="{% static 'css/madrasati.css' %}">
 {% endblock %}
 

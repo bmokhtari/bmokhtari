@@ -12,8 +12,8 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from core.models import AcademicYear, Level, SchoolClass, Subject
-from finance.models import (SCHOOL_MONTHS, Payment, TuitionPlan,
-                            expected_monthly_amount)
+from finance.models import (SCHOOL_MONTHS, DiscountRequest, Payment,
+                            TuitionPlan, expected_monthly_amount)
 from hr.models import Employee, PayrollRun
 from students.models import Enrollment, Guardian, Student
 
@@ -232,6 +232,22 @@ class Command(BaseCommand):
                     reference="" if position % 2 else f"44701{index}{position}",
                     date=datetime.date(pay_year, month, 3 + position % 5),
                 )
+
+        # Deux demandes de remise : une en attente, une déjà approuvée,
+        # pour illustrer le circuit d'approbation.
+        first, second = Enrollment.objects.order_by("pk")[:2]
+        if not DiscountRequest.objects.exists():
+            DiscountRequest.objects.create(
+                enrollment=first, percentage=Decimal("20"),
+                scope=DiscountRequest.Scope.YEAR,
+                reason="Deuxième enfant scolarisé dans l'établissement.")
+            approved = DiscountRequest.objects.create(
+                enrollment=second, percentage=Decimal("15"),
+                scope=DiscountRequest.Scope.PERIOD,
+                start_month=1, end_month=3,
+                reason="Absence prolongée pour raisons médicales.")
+            approved.decide(DiscountRequest.Status.APPROVED, None,
+                            note="Justificatif médical fourni.")
 
         for month in (9, 10, 11, 12):
             run, created = PayrollRun.objects.get_or_create(

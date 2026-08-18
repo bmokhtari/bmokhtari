@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -110,12 +112,144 @@ class Payment(models.Model):
         super().save(*args, **kwargs)
 
 
-def expected_monthly_amount(enrollment):
+class DiscountRequest(models.Model):
+    """Demande de remise sur la scolarité, soumise à approbation.
+
+    Une remise n'a d'effet qu'une fois approuvée : le secrétariat saisit la
+    demande (motif, taux, période), la direction l'approuve ou la refuse.
+    Tant qu'elle est en attente, les mensualités restent inchangées.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "pending", _("En attente")
+        APPROVED = "approved", _("Approuvée")
+        REJECTED = "rejected", _("Refusée")
+
+    class Scope(models.TextChoices):
+        YEAR = "year", _("Toute l'année scolaire")
+        PERIOD = "period", _("Période déterminée")
+
+    enrollment = models.ForeignKey(
+        "students.Enrollment", on_delete=models.CASCADE,
+        related_name="discount_requests", verbose_name=_("inscription"))
+    percentage = models.DecimalField(
+        _("remise demandée (%)"), max_digits=5, decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01")),
+                    MaxValueValidator(Decimal("100"))],
+        help_text=_("Pourcentage appliqué à la mensualité."))
+    scope = models.CharField(_("portée"), max_length=8, choices=Scope.choices,
+                             default=Scope.YEAR)
+    start_month = models.PositiveSmallIntegerField(
+        _("du mois de"), choices=SCHOOL_MONTHS, null=True, blank=True)
+    end_month = models.PositiveSmallIntegerField(
+        _("au mois de"), choices=SCHOOL_MONTHS, null=True, blank=True)
+    reason = models.TextField(
+        _("motif"),
+        help_text=_("Fratrie, situation sociale, bourse, absence prolongée…"))
+
+    status = models.CharField(_("statut"), max_length=10,
+                              choices=Status.choices, default=Status.PENDING,
+                              editable=False)
+    requested_by = models.ForeignKey(
+        "auth.User", on_delete=models.SET_NULL, null=True, blank=True,
+        editable=False, related_name="discount_requests_made",
+        verbose_name=_("demandée par"))
+    requested_on = models.DateTimeField(_("demandée le"), auto_now_add=True)
+    decided_by = models.ForeignKey(
+        "auth.User", on_delete=models.SET_NULL, null=True, blank=True,
+        editable=False, related_name="discount_requests_decided",
+        verbose_name=_("décision de"))
+    decided_on = models.DateTimeField(_("décidée le"), null=True, blank=True,
+                                      editable=False)
+    decision_note = models.CharField(_("motif de la décision"), max_length=200,
+                                     blank=True)
+
+    class Meta:
+        verbose_name = _("demande de remise")
+        verbose_name_plural = _("demandes de remise")
+        ordering = ["-requested_on"]
+        permissions = [
+            ("approve_discountrequest",
+             _("Peut approuver ou refuser une demande de remise")),
+        ]
+
+    def __str__(self):
+        return f"{self.enrollment.student} — {self.percentage} % ({self.get_status_display()})"
+
+    def clean(self):
+        if self.scope == self.Scope.PERIOD:
+            if not self.start_month or not self.end_month:
+                raise ValidationError({
+                    "start_month": _("Précisez le premier et le dernier mois "
+                                     "de la période."),
+                })
+            months = [m for m, _label in SCHOOL_MONTHS]
+            if months.index(self.start_month) > months.index(self.end_month):
+                raise ValidationError({
+                    "end_month": _("Le dernier mois doit suivre le premier "
+                                   "dans l'année scolaire."),
+                })
+        else:
+            # Une remise annuelle n'a pas de bornes de période.
+            self.start_month = None
+            self.end_month = None
+
+    @property
+    def period_display(self):
+        if self.scope == self.Scope.YEAR:
+            return _("Toute l'année")
+        return f"{self.get_start_month_display()} → {self.get_end_month_display()}"
+
+    def covers(self, month):
+        """La remise s'applique-t-elle au mois donné ?"""
+        if self.status != self.Status.APPROVED:
+            return False
+        if self.scope == self.Scope.YEAR:
+            return True
+        if not self.start_month or not self.end_month:
+            return False
+        months = [m for m, _label in SCHOOL_MONTHS]
+        try:
+            position = months.index(month)
+        except ValueError:
+            return False
+        return (months.index(self.start_month) <= position
+                <= months.index(self.end_month))
+
+    def decide(self, status, user, note=""):
+        """Enregistre la décision de l'approbateur."""
+        self.status = status
+        self.decided_by = user
+        self.decided_on = timezone.now()
+        if note:
+            self.decision_note = note
+        self.save(update_fields=["status", "decided_by", "decided_on",
+                                 "decision_note"])
+
+
+def effective_discount_pct(enrollment, month=None):
+    """Remise réellement applicable, en pourcentage.
+
+    Combine la remise permanente de l'inscription et les demandes
+    **approuvées** couvrant le mois considéré ; la plus avantageuse pour la
+    famille l'emporte. Les demandes en attente ou refusées sont ignorées.
+    """
+    base = enrollment.discount_pct or Decimal("0")
+    if month is None:
+        return base
+    granted = [request.percentage
+               for request in enrollment.discount_requests.all()
+               if request.covers(month)]
+    return max([base, *granted]) if granted else base
+
+
+def expected_monthly_amount(enrollment, month=None):
     """Mensualité due pour une inscription, remise déduite."""
     plan = enrollment.tuition_plan
     if plan is None:
         return Decimal("0.00")
-    discount = Decimal("1") - (enrollment.discount_pct or 0) / Decimal("100")
+    pct = effective_discount_pct(enrollment, month)
+    discount = Decimal("1") - pct / Decimal("100")
     return (plan.monthly_fee * discount).quantize(Decimal("0.01"))
 
 

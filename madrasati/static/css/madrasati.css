@@ -1063,3 +1063,241 @@ html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left
   .m-blank { padding: 38px 18px 42px; }
   .m-blank h2 { font-size: 17px; }
 }
+
+/* ====================================================================
+   Finitions : icônes, panneau de filtres, widgets de formulaire
+   ==================================================================== */
+
+/* --- Icônes -----------------------------------------------------------
+   L'admin livre des icônes SVG multicolores (plus vert, crayon jaune,
+   œil bleu, croix rouge). On les repeint en masque monochrome pour
+   qu'elles suivent la couleur du texte et forment un jeu cohérent. */
+
+.addlink, .changelink, .viewlink, .deletelink, .hidelink,
+.inlinechangelink, .inlineviewlink {
+  background: none;
+  padding-left: 19px;
+  position: relative;
+}
+html[dir="rtl"] .addlink, html[dir="rtl"] .changelink,
+html[dir="rtl"] .viewlink, html[dir="rtl"] .deletelink,
+html[dir="rtl"] .hidelink { padding-left: 0; padding-right: 19px; }
+
+.object-tools a.addlink, .object-tools a.viewsitelink { padding-left: 15px; }
+.object-tools a.addlink::before, .object-tools a.viewsitelink::before { content: none; }
+
+.addlink::before, .changelink::before, .viewlink::before,
+.deletelink::before, .hidelink::before,
+.inlinechangelink::before, .inlineviewlink::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  background-color: currentColor;
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+.addlink::before {
+  -webkit-mask-image: url(../admin/img/icon-addlink.svg);
+  mask-image: url(../admin/img/icon-addlink.svg);
+}
+.changelink::before, .inlinechangelink::before {
+  -webkit-mask-image: url(../admin/img/icon-changelink.svg);
+  mask-image: url(../admin/img/icon-changelink.svg);
+}
+.viewlink::before, .inlineviewlink::before {
+  -webkit-mask-image: url(../admin/img/icon-viewlink.svg);
+  mask-image: url(../admin/img/icon-viewlink.svg);
+}
+.deletelink::before {
+  -webkit-mask-image: url(../admin/img/icon-deletelink.svg);
+  mask-image: url(../admin/img/icon-deletelink.svg);
+}
+.hidelink::before {
+  -webkit-mask-image: url(../admin/img/icon-hidelink.svg);
+  mask-image: url(../admin/img/icon-hidelink.svg);
+}
+
+/* --- Barre latérale : ligne du modèle courant -------------------------
+   Django peint toute la ligne (« --selected-row », ici sable pâle), ce
+   qui produisait un bandeau clair barrant la colonne sombre. Seul le
+   lien du modèle porte désormais la pastille. */
+#nav-sidebar .current-model { background: transparent; }
+#nav-sidebar .module th.current-model a { background: var(--m-green-600); color: #FFF8EC; font-weight: 500; }
+#nav-sidebar .module td.current-model a,
+#nav-sidebar .module td a.addlink {
+  background: transparent;
+  color: #7FA592;
+  font-weight: 400;
+}
+#nav-sidebar .module td a.addlink:hover { background: var(--m-green-800); color: var(--m-gold); }
+
+/* --- Panneau de filtres ---------------------------------------------- */
+
+#changelist-filter { padding-bottom: 4px; overflow: hidden; }
+#changelist-filter h2 {
+  font-family: var(--m-serif);
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--m-ink);
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  padding: 13px 16px;
+  margin: 0;
+}
+#changelist-filter-extra-actions {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--m-hair);
+  font-weight: 400;
+}
+#changelist-filter-extra-actions h3 { margin: 0; font-size: 12.5px; font-weight: 400; }
+#changelist-filter-extra-actions h3 + h3 { margin-top: 6px; }
+
+#changelist-filter details { border-bottom: 1px solid var(--m-hair); }
+#changelist-filter details:last-of-type { border-bottom: 0; }
+#changelist-filter summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+  background: none;
+}
+#changelist-filter summary::-webkit-details-marker,
+#changelist-filter summary::marker { display: none; content: ""; }
+#changelist-filter details > summary::before,
+#changelist-filter details[open] > summary::before { content: none; }
+#changelist-filter summary::after {          /* chevron discret */
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-right: 1.5px solid var(--m-muted);
+  border-bottom: 1.5px solid var(--m-muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .15s ease;
+}
+#changelist-filter details[open] > summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+#changelist-filter summary:hover { color: var(--m-ink-2); }
+
+#changelist-filter ul {
+  margin: 0;
+  padding: 0 10px 12px;
+  list-style: none;
+  border-bottom: 0;
+}
+#changelist-filter li { margin: 0; padding: 0; border: 0; }
+#changelist-filter li a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--m-ink-2);
+  border-left: 0;
+}
+#changelist-filter li a:hover { background: var(--m-surface-2); color: var(--m-green-900); }
+#changelist-filter li.selected { border-left: 0; padding-left: 0; margin-left: 0; }
+#changelist-filter li.selected a {
+  background: var(--m-green-100);
+  color: var(--m-green-900);
+  font-weight: 600;
+}
+
+/* --- Champs de formulaire -------------------------------------------- */
+
+select, .vTextField, input[type=text], input[type=password], input[type=email],
+input[type=url], input[type=number], input[type=tel] {
+  min-height: 38px;
+  line-height: 1.35;
+}
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 32px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236E7C74' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+}
+html[dir="rtl"] select { background-position: left 12px center; }
+select[multiple] { background-image: none; padding-inline-end: 11px; }
+
+/* Boutons d'action à côté d'un champ lié (modifier, ajouter, voir…) */
+.related-widget-wrapper { align-items: center; gap: 0 6px; }
+.related-widget-wrapper-link {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface);
+  opacity: 1;
+  filter: none;
+}
+.related-widget-wrapper-link img { display: none; }
+.related-widget-wrapper-link::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  background-color: var(--m-green-700);
+  -webkit-mask-size: 15px 15px; mask-size: 15px 15px;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
+.related-widget-wrapper-link:hover { background: var(--m-green-100); border-color: var(--m-green-200); }
+.change-related::before {
+  -webkit-mask-image: url(../admin/img/icon-changelink.svg);
+  mask-image: url(../admin/img/icon-changelink.svg);
+}
+.add-related::before {
+  -webkit-mask-image: url(../admin/img/icon-addlink.svg);
+  mask-image: url(../admin/img/icon-addlink.svg);
+}
+.view-related::before {
+  -webkit-mask-image: url(../admin/img/icon-viewlink.svg);
+  mask-image: url(../admin/img/icon-viewlink.svg);
+}
+.delete-related::before {
+  -webkit-mask-image: url(../admin/img/icon-deletelink.svg);
+  mask-image: url(../admin/img/icon-deletelink.svg);
+  background-color: #A3341C;
+}
+.delete-related:hover { background: var(--m-danger-bg); border-color: #E6CFC4; }
+/* Lien désactivé (aucun objet sélectionné) : gris, sans relief. */
+.related-widget-wrapper-link:not([href]) { opacity: .45; pointer-events: none; }
+
+/* Pastille de statut (demandes de remise, cycles de paie…) */
+.m-status {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Tuile signalant une action en attente */
+.m-tile--flag { border-color: #E6D4A8; background: #FDF8EC; }
+.m-tile--flag .m-tile-v a { color: var(--m-green-900); }
+.m-tile--flag .m-tile-v a:hover { color: var(--m-green-700); text-decoration: underline; }

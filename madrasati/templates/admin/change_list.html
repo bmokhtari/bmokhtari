@@ -13,9 +13,19 @@
 {% endcomment %}
 {% block content_title %}<h1>{{ cl.opts.verbose_name_plural|capfirst }}</h1>{% endblock %}
 
-{% comment %}Rien à chercher tant que la liste est vide.{% endcomment %}
+{% comment %}
+  Tant que la liste est vide et qu'aucun paramètre n'est appliqué, la barre
+  de recherche, la navigation par date et la colonne de filtres n'ont rien
+  à offrir : elles ne laissaient que des cadres et des traits vides.
+  « cl.params » couvre aussi bien une recherche qu'un filtre ou un niveau
+  de navigation par date.
+{% endcomment %}
 {% block search %}
-  {% if cl.result_count or cl.query or cl.has_active_filters %}{{ block.super }}{% endif %}
+  {% if cl.result_count or cl.params %}{{ block.super }}{% endif %}
+{% endblock %}
+
+{% block date_hierarchy %}
+  {% if cl.result_count or cl.params %}{{ block.super }}{% endif %}
 {% endblock %}
 
 {% block result_list %}
@@ -31,7 +41,7 @@
         </g>
       </svg>
 
-      {% if cl.has_active_filters or cl.query %}
+      {% if cl.params %}
         <h2>{% translate "Aucun résultat" %}</h2>
         <p>
           {% blocktranslate trimmed with name=cl.opts.verbose_name_plural %}
@@ -60,7 +70,7 @@
 
 {% comment %}Sans données ni filtre actif, la colonne de filtres n'a rien à filtrer.{% endcomment %}
 {% block filters %}
-  {% if cl.result_count or cl.has_active_filters or cl.query %}{{ block.super }}{% endif %}
+  {% if cl.result_count or cl.params %}{{ block.super }}{% endif %}
 {% endblock %}
 
 {% block pagination %}
