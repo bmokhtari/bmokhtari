@@ -253,6 +253,46 @@ def expected_monthly_amount(enrollment, month=None):
     return (plan.monthly_fee * discount).quantize(Decimal("0.01"))
 
 
+def due_months(enrollment, today=None):
+    """Mois de scolarité déjà échus à la date du jour.
+
+    L'année scolaire marocaine court de septembre à juin ; hors de cette
+    période (juillet-août), l'année est considérée comme terminée.
+    """
+    months = [m for m, _label in SCHOOL_MONTHS]
+    plan = enrollment.tuition_plan
+    limit = plan.months_count if plan else len(months)
+    calendar = months[:limit]
+
+    today = today or timezone.localdate()
+    year = enrollment.school_class.academic_year
+    # L'année visée peut être passée ou à venir : on se cale d'abord sur ses
+    # bornes, sinon un mois de l'année en cours minorerait la dette d'une
+    # année déjà achevée.
+    if today >= year.end_date:
+        return calendar
+    if today < year.start_date:
+        return []
+    if today.month in calendar:
+        return calendar[:calendar.index(today.month) + 1]
+    return calendar
+
+
+def overdue_months(enrollment, today=None):
+    """Mois échus mais non réglés, du plus ancien au plus récent."""
+    paid = set(enrollment.payments
+               .filter(kind=Payment.Kind.TUITION, month__isnull=False)
+               .values_list("month", flat=True))
+    return [month for month in due_months(enrollment, today) if month not in paid]
+
+
+def overdue_total(enrollment, today=None):
+    """Montant restant dû sur les mois échus, remises appliquées."""
+    return sum((expected_monthly_amount(enrollment, month)
+                for month in overdue_months(enrollment, today)),
+               Decimal("0.00"))
+
+
 def unpaid_months(enrollment):
     """Mois de l'année scolaire non encore réglés pour une inscription."""
     plan = enrollment.tuition_plan

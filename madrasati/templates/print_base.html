@@ -146,11 +146,14 @@
 <body>
 
 <div class="toolbar">
+  {% block print_button %}
   <button type="button" onclick="window.print()">{% translate "Imprimer" %}</button>
+  {% endblock %}
   <a class="ghost" href="{% block back_url %}{% url 'admin:index' %}{% endblock %}">{% translate "Retour" %}</a>
 </div>
 
 <div class="sheet {% block sheet_class %}{% endblock %}">
+  {% block letterhead %}
   <header class="lh">
     <div class="lh-fr">
       <svg width="38" height="38" viewBox="0 0 34 34" fill="none" aria-hidden="true">
@@ -183,6 +186,7 @@
     <rect width="560" height="14" fill="url(#zellige)"/>
   </svg>
   <div class="rule-solid" aria-hidden="true"></div>
+  {% endblock %}
 
   {% block content %}{% endblock %}
 </div>

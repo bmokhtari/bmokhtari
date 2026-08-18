@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models import AcademicYear, SchoolClass
 from finance.models import (SCHOOL_MONTHS, DiscountRequest, Payment,
-                            expected_monthly_amount)
+                            overdue_months, overdue_total)
 from hr.models import Employee, PayrollRun
 from students.models import Enrollment, Student
 
@@ -56,43 +56,29 @@ def _revenue_series(year, today):
 
 
 def _late_enrollments(year, today, limit=5):
-    """Élèves dont des mensualités restent dues, du plus en retard au moins."""
+    """Élèves dont des mensualités échues restent dues."""
     if year is None:
         return []
 
-    enrollments = list(
-        Enrollment.objects
-        .filter(status=Enrollment.Status.ACTIVE,
-                school_class__academic_year=year,
-                tuition_plan__isnull=False)
-        .select_related("student", "tuition_plan", "school_class__level")
-    )
-    if not enrollments:
-        return []
-
-    paid = dict(
-        Payment.objects
-        .filter(kind=Payment.Kind.TUITION, month__isnull=False,
-                enrollment__in=enrollments)
-        .values_list("enrollment")
-        .annotate(n=Count("month", distinct=True))
-    )
-
-    # Nombre de mensualités échues à ce jour dans l'année scolaire.
-    elapsed = (YEAR_MONTHS.index(today.month) + 1
-               if today.month in YEAR_MONTHS else len(YEAR_MONTHS))
+    enrollments = (Enrollment.objects
+                   .filter(status=Enrollment.Status.ACTIVE,
+                           school_class__academic_year=year,
+                           tuition_plan__isnull=False)
+                   .select_related("student", "tuition_plan",
+                                   "school_class__level",
+                                   "school_class__academic_year")
+                   .prefetch_related("payments", "discount_requests"))
 
     late = []
     for enrollment in enrollments:
-        due = min(elapsed, enrollment.tuition_plan.months_count)
-        missing = due - paid.get(enrollment.pk, 0)
-        if missing > 0:
+        missing = overdue_months(enrollment, today)
+        if missing:
             late.append({
                 "enrollment": enrollment,
                 "student": enrollment.student,
                 "school_class": enrollment.school_class,
-                "months": missing,
-                "amount": expected_monthly_amount(enrollment) * missing,
+                "months": len(missing),
+                "amount": overdue_total(enrollment, today),
             })
 
     late.sort(key=lambda row: (-row["months"], row["student"].last_name))

@@ -1301,3 +1301,99 @@ select[multiple] { background-image: none; padding-inline-end: 11px; }
 .m-tile--flag { border-color: #E6D4A8; background: #FDF8EC; }
 .m-tile--flag .m-tile-v a { color: var(--m-green-900); }
 .m-tile--flag .m-tile-v a:hover { color: var(--m-green-700); text-decoration: underline; }
+
+/* --- Formulaires : finitions ------------------------------------------ */
+
+/* Case à cocher et bouton radio aux couleurs du thème (bleu système sinon). */
+input[type=checkbox], input[type=radio] {
+  accent-color: var(--m-green-700);
+  width: 15px;
+  height: 15px;
+}
+
+/* L'en-tête d'un groupe de champs déborde du cadre arrondi : on le rend
+   solidaire de la carte. */
+fieldset.module > h2 {
+  border: 0;
+  border-bottom: 1px solid var(--m-line);
+  margin: 0;
+}
+fieldset.module { padding-top: 0; }
+
+/* Champ en lecture seule (empreinte du mot de passe, horodatages…) :
+   le texte long doit revenir à la ligne plutôt que déborder. */
+.form-row .readonly, div.readonly, .form-row p.datetime { overflow-wrap: anywhere; }
+.form-row .readonly { color: var(--m-ink-2); }
+
+/* Sélecteur à deux colonnes (groupes, permissions) : la colonne « choisis »
+   était écrite en vert foncé sur vert foncé, donc illisible. */
+.selector-available-title, .selector-chosen-title {
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius-sm) var(--m-radius-sm) 0 0;
+  padding: 10px 12px;
+}
+.selector-available-title { background: var(--m-surface-2); color: var(--m-ink-2); }
+.selector-chosen-title { background: var(--m-green-100); color: var(--m-green-900); }
+.selector-chosen-title label, .selector-available-title label {
+  font-weight: 600;
+  font-size: 12.5px;
+  color: inherit;
+}
+.selector .helptext, .selector-available-title .helptext,
+.selector-chosen-title .helptext {
+  color: var(--m-muted);
+  font-weight: 400;
+  font-size: 11.5px;
+  display: block;
+  margin-top: 3px;
+}
+.selector-chosen-title .helptext { color: #3F6B57; }
+.selector select, .selector .selector-filter, .selector-chosen .list-footer-display {
+  border-color: var(--m-line);
+}
+.selector select { border-radius: 0 0 var(--m-radius-sm) var(--m-radius-sm); }
+.selector .selector-filter input { min-height: 34px; }
+.selector-add, .selector-remove, .selector-chooseall, .selector-clearall {
+  color: var(--m-green-700);
+}
+
+/* Raccourcis de date et d'heure : mêmes icônes monochromes que le reste. */
+.datetimeshortcuts .date-icon, .datetimeshortcuts .clock-icon {
+  background: none !important;
+  width: 17px;
+  height: 17px;
+}
+.datetimeshortcuts .date-icon::before, .datetimeshortcuts .clock-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--m-green-700);
+  /* Ces icônes sont des sprites de deux états empilés (24 × 48) : on cale
+     la largeur et on n'affiche que l'état du haut. */
+  -webkit-mask-size: 17px auto; mask-size: 17px auto;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center top; mask-position: center top;
+}
+.datetimeshortcuts .date-icon::before {
+  -webkit-mask-image: url(../admin/img/icon-calendar.svg);
+  mask-image: url(../admin/img/icon-calendar.svg);
+}
+.datetimeshortcuts .clock-icon::before {
+  -webkit-mask-image: url(../admin/img/icon-clock.svg);
+  mask-image: url(../admin/img/icon-clock.svg);
+}
+.datetimeshortcuts a:hover .date-icon::before,
+.datetimeshortcuts a:hover .clock-icon::before { background-color: var(--m-green-900); }
+
+/* Barre d'enregistrement : une seule casse pour tous les boutons. */
+.submit-row input, .submit-row a, .submit-row button,
+.submit-row input.default {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.submit-row a.deletelink, .submit-row .deletelink-box a {
+  background: var(--m-danger-bg);
+  color: #8E2E14;
+  border: 1px solid #E6CFC4;
+}
+.submit-row a.deletelink:hover { background: #F2DCD2; color: #7A2711; }

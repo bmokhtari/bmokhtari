@@ -1,8 +1,12 @@
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _, ngettext
 
-from finance.models import DiscountRequest, Payment
-from .models import Attendance, Enrollment, Grade, Guardian, Student
+from finance.models import DiscountRequest, Payment, overdue_months, overdue_total
+from .models import (Attendance, BehaviourRecord, Enrollment, Grade, Guardian,
+                     Student)
 
 
 class EnrollmentInline(admin.TabularInline):
@@ -61,6 +65,14 @@ class PaymentInline(admin.TabularInline):
     readonly_fields = ["receipt_number"]
 
 
+class BehaviourInline(admin.TabularInline):
+    model = BehaviourRecord
+    extra = 0
+    fields = ["date", "kind", "summary", "subject", "reported_by",
+              "follow_up", "guardians_informed"]
+    autocomplete_fields = ["subject", "reported_by"]
+
+
 class DiscountRequestInline(admin.TabularInline):
     model = DiscountRequest
     extra = 0
@@ -73,14 +85,87 @@ class DiscountRequestInline(admin.TabularInline):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ["student", "school_class", "status", "tuition_plan",
-                    "discount_pct", "date"]
+    list_display = ["student", "school_class", "status", "payment_state",
+                    "discount_pct", "certificate_link", "date"]
     list_filter = ["status", "school_class__academic_year",
                    "school_class__level"]
     search_fields = ["student__last_name", "student__first_name",
                      "student__massar_code"]
     autocomplete_fields = ["student", "school_class", "tuition_plan"]
-    inlines = [DiscountRequestInline, PaymentInline]
+    inlines = [DiscountRequestInline, PaymentInline, BehaviourInline]
+
+    def get_queryset(self, request):
+        # Le statut de scolarité de chaque ligne se calcule à partir des
+        # paiements et des remises : on les précharge pour éviter une
+        # cascade de requêtes.
+        return (super().get_queryset(request)
+                .select_related("student", "tuition_plan",
+                                "school_class__level",
+                                "school_class__academic_year")
+                .prefetch_related("payments", "discount_requests"))
+
+    @admin.display(description=_("scolarité"))
+    def payment_state(self, obj):
+        unpaid = overdue_months(obj)
+        if not unpaid:
+            return format_html(
+                '<span class="m-status" style="background:#E6F0EA;color:#14573D">{}</span>',
+                _("À jour"))
+        label = ngettext("%d mois dû", "%d mois dus", len(unpaid)) % len(unpaid)
+        return format_html(
+            '<span class="m-status" style="background:#F7EAE3;color:#9C4426">{}</span>',
+            label)
+
+    @admin.display(description=_("attestation"))
+    def certificate_link(self, obj):
+        url = reverse("enrollment-certificate", args=[obj.pk])
+        return format_html('<a class="m-print" href="{}" target="_blank">{}</a>',
+                           url, _("Attestation"))
+
+
+@admin.register(BehaviourRecord)
+class BehaviourRecordAdmin(admin.ModelAdmin):
+    """Vie scolaire : faits marquants, positifs comme négatifs."""
+
+    list_display = ["date", "student_name", "school_class", "kind_badge",
+                    "summary", "reported_by", "guardians_informed"]
+    list_filter = ["kind", "guardians_informed", "date",
+                   "enrollment__school_class__level"]
+    search_fields = ["enrollment__student__last_name",
+                     "enrollment__student__first_name", "summary", "details"]
+    autocomplete_fields = ["enrollment", "subject", "reported_by"]
+    date_hierarchy = "date"
+    list_editable = ["guardians_informed"]
+    fieldsets = [
+        (_("Fait"), {"fields": ["enrollment", "date", "kind", "summary",
+                                "details", "subject"]}),
+        (_("Suivi"), {"fields": ["reported_by", "follow_up",
+                                 "guardians_informed"]}),
+    ]
+
+    def get_queryset(self, request):
+        return (super().get_queryset(request)
+                .select_related("enrollment__student",
+                                "enrollment__school_class__level",
+                                "reported_by"))
+
+    @admin.display(description=_("élève"),
+                   ordering="enrollment__student__last_name")
+    def student_name(self, obj):
+        return str(obj.enrollment.student)
+
+    @admin.display(description=_("classe"))
+    def school_class(self, obj):
+        school_class = obj.enrollment.school_class
+        return f"{school_class.level.code} - {school_class.name}"
+
+    @admin.display(description=_("nature"), ordering="kind")
+    def kind_badge(self, obj):
+        background, colour = (("#F7EAE3", "#9C4426") if obj.is_negative
+                              else ("#E6F0EA", "#14573D"))
+        return format_html(
+            '<span class="m-status" style="background:{};color:{}">{}</span>',
+            background, colour, obj.get_kind_display())
 
 
 @admin.register(Attendance)

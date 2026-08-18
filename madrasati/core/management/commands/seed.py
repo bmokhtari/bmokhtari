@@ -15,7 +15,8 @@ from core.models import AcademicYear, Level, SchoolClass, Subject
 from finance.models import (SCHOOL_MONTHS, DiscountRequest, Payment,
                             TuitionPlan, expected_monthly_amount)
 from hr.models import Employee, PayrollRun
-from students.models import Enrollment, Guardian, Student
+from students.models import (BehaviourRecord, Enrollment, Guardian,
+                             Student)
 
 LEVELS = [
     # (cycle, code, nom_fr, nom_ar)
@@ -248,6 +249,26 @@ class Command(BaseCommand):
                 reason="Absence prolongée pour raisons médicales.")
             approved.decide(DiscountRequest.Status.APPROVED, None,
                             note="Justificatif médical fourni.")
+
+        # Vie scolaire : un fait positif, deux faits négatifs.
+        if not BehaviourRecord.objects.exists():
+            facts = [
+                (0, BehaviourRecord.Kind.COMMENDATION,
+                 "Aide apportée à un camarade en difficulté", True),
+                (2, BehaviourRecord.Kind.WARNING,
+                 "Bavardages répétés en classe", True),
+                (7, BehaviourRecord.Kind.REMARK,
+                 "Matériel oublié à plusieurs reprises", False),
+            ]
+            enrollments = list(Enrollment.objects.order_by("pk"))
+            for index, (position, kind, summary, informed) in enumerate(facts):
+                BehaviourRecord.objects.create(
+                    enrollment=enrollments[position],
+                    date=datetime.date(start_year, 10 + index % 3, 6 + index),
+                    kind=kind, summary=summary,
+                    guardians_informed=informed,
+                    reported_by=employees["EMP001"],
+                    follow_up="Entretien avec les tuteurs." if informed else "")
 
         for month in (9, 10, 11, 12):
             run, created = PayrollRun.objects.get_or_create(

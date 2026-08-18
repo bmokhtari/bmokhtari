@@ -199,3 +199,59 @@ class Grade(models.Model):
 
     def __str__(self):
         return f"{self.enrollment.student} — {self.subject} : {self.score}/20"
+
+
+class BehaviourRecord(models.Model):
+    """Fait de vie scolaire : remarque, sanction ou encouragement.
+
+    La conduite ne se résume pas aux incidents : les félicitations et les
+    encouragements se consignent au même endroit, pour que le dossier de
+    l'élève reflète l'ensemble de son comportement.
+    """
+
+    class Kind(models.TextChoices):
+        COMMENDATION = "commendation", _("Félicitations")
+        ENCOURAGEMENT = "encouragement", _("Encouragements")
+        REMARK = "remark", _("Remarque")
+        WARNING = "warning", _("Avertissement")
+        DETENTION = "detention", _("Retenue")
+        EXCLUSION = "exclusion", _("Exclusion temporaire")
+
+    # Faits négatifs, pour lesquels l'information des tuteurs est attendue.
+    NEGATIVE_KINDS = ("remark", "warning", "detention", "exclusion")
+
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE,
+                                   related_name="behaviour_records",
+                                   verbose_name=_("inscription"))
+    date = models.DateField(_("date du fait"), default=timezone.localdate)
+    kind = models.CharField(_("nature"), max_length=14, choices=Kind.choices,
+                            default=Kind.REMARK)
+    summary = models.CharField(_("intitulé"), max_length=120,
+                               help_text=_("Ex. : bavardage répété, aide "
+                                           "apportée à un camarade."))
+    details = models.TextField(_("détails"), blank=True)
+    subject = models.ForeignKey("core.Subject", on_delete=models.SET_NULL,
+                                null=True, blank=True,
+                                related_name="behaviour_records",
+                                verbose_name=_("matière / cours"))
+    reported_by = models.ForeignKey("hr.Employee", on_delete=models.SET_NULL,
+                                    null=True, blank=True,
+                                    related_name="behaviour_records",
+                                    verbose_name=_("signalé par"))
+    follow_up = models.CharField(_("suite donnée"), max_length=200, blank=True,
+                                 help_text=_("Sanction, entretien, mesure "
+                                             "d'accompagnement…"))
+    guardians_informed = models.BooleanField(_("tuteurs informés"),
+                                             default=False)
+
+    class Meta:
+        verbose_name = _("fait de comportement")
+        verbose_name_plural = _("comportement")
+        ordering = ["-date", "-id"]
+
+    def __str__(self):
+        return f"{self.enrollment.student} — {self.get_kind_display()} ({self.date})"
+
+    @property
+    def is_negative(self):
+        return self.kind in self.NEGATIVE_KINDS

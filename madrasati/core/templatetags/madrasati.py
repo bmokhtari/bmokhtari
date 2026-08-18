@@ -33,3 +33,11 @@ def dh(value, decimals=0):
     """
     return format_html('<span class="m-money" dir="ltr">{}\u00a0DH</span>',
                        dirhams(value, decimals))
+
+
+@register.filter
+def month_name(value):
+    """Nom du mois de l'année scolaire à partir de son numéro."""
+    from finance.models import SCHOOL_MONTHS
+
+    return dict(SCHOOL_MONTHS).get(value, value)

@@ -1,0 +1,81 @@
+{% extends "print_base.html" %}
+{% load i18n madrasati %}
+
+{% block title %}{% translate "Document indisponible" %}{% endblock %}
+{% block sheet_class %}sheet--compact{% endblock %}
+{% block letterhead %}{% endblock %}
+{% comment %}Rien à imprimer ici.{% endcomment %}
+{% block print_button %}{% endblock %}
+{% block back_url %}{% url 'admin:students_enrollment_change' enrollment.pk %}{% endblock %}
+
+{% block content %}
+  <div class="blocked">
+    <svg width="46" height="46" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="44" height="44" rx="12" fill="#F7EAE3" stroke="#E6CFC4"/>
+      <g stroke="#9C4426" stroke-width="1.7" fill="none" stroke-linecap="round">
+        <circle cx="23" cy="23" r="10"/>
+        <path d="M23 17.5v6.5M23 28.5v.4"/>
+      </g>
+    </svg>
+
+    <h1>{% translate "Document indisponible" %}</h1>
+    <p>
+      {% blocktranslate trimmed with student=enrollment.student document=document %}
+        L'{{ document }} de {{ student }} ne peut pas être délivrée tant que
+        la scolarité n'est pas à jour.
+      {% endblocktranslate %}
+    </p>
+
+    <div class="blocked-facts">
+      <div>
+        <div class="k">{% translate "Mensualités échues non réglées" %}</div>
+        <div class="v num">{{ unpaid_count }}</div>
+      </div>
+      <div>
+        <div class="k">{% translate "Montant restant dû" %}</div>
+        <div class="v">{{ amount_due|dh:2 }}</div>
+      </div>
+    </div>
+
+    <p class="blocked-months">
+      {% translate "Mois concernés" %} :
+      {% for month in unpaid_months %}{% if not forloop.first %}, {% endif %}{{ month|month_name }}{% endfor %}
+    </p>
+
+    <div class="blocked-actions">
+      <a class="btn" href="{% url 'admin:finance_payment_add' %}?enrollment={{ enrollment.pk }}">
+        {% translate "Enregistrer un paiement" %}
+      </a>
+      <a class="btn ghost" href="{% url 'admin:students_enrollment_change' enrollment.pk %}">
+        {% translate "Voir l'inscription" %}
+      </a>
+    </div>
+  </div>
+
+  <style>
+    .blocked { text-align: center; padding: 40px 10px 30px; display: flex;
+               flex-direction: column; align-items: center; gap: 6px; }
+    .blocked h1 { font-family: var(--serif); font-size: 24px; font-weight: 600;
+                  color: var(--green-900); margin: 10px 0 0; }
+    .blocked p { color: var(--ink-2); font-size: 14.5px; line-height: 1.65;
+                 margin: 4px 0 0; max-width: 52ch; }
+    .blocked-facts { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap;
+                     justify-content: center; }
+    .blocked-facts > div { border: 1px solid var(--line); border-radius: 12px;
+                           background: var(--cream); padding: 13px 20px; min-width: 190px; }
+    .blocked-facts .k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+                        color: var(--muted); }
+    .blocked-facts .v { font-size: 23px; font-weight: 600; color: var(--green-900);
+                        margin-top: 5px; }
+    .blocked-months { font-size: 13.5px; color: var(--muted); }
+    .blocked-actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap;
+                       justify-content: center; }
+    .blocked-actions .btn { display: inline-flex; align-items: center; height: 40px;
+                            padding: 0 18px; border-radius: 9px; font-size: 13.5px;
+                            font-weight: 500; text-decoration: none;
+                            background: var(--green-700); color: #FFF8EC;
+                            border: 1px solid var(--green-900); }
+    .blocked-actions .btn.ghost { background: #fff; color: var(--green-700);
+                                  border-color: var(--sand); }
+  </style>
+{% endblock %}
