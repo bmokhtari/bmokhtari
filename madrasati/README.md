@@ -77,9 +77,11 @@ python manage.py compilemessages   # nécessite gettext
 
 ## Hébergement
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/bmokhtari/SchoolRepo)
+
 GitHub ne peut pas exécuter l'application (GitHub Pages ne sert que des
 sites statiques) : il faut un hébergeur Python. Le dépôt est prêt pour un
-déploiement en un clic sur **Render** :
+déploiement en un clic sur **Render** — bouton ci-dessus, ou manuellement :
 
 1. Créer un compte sur <https://render.com> (offre gratuite).
 2. **New +** → **Blueprint** → connecter ce dépôt GitHub.
