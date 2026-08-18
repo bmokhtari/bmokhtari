@@ -1,0 +1,49 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}{% endblock %}</title>
+  <style>
+    body { font-family: "Segoe UI", Tahoma, Arial, sans-serif; color: #1a1a2e;
+           max-width: 800px; margin: 24px auto; padding: 0 16px; }
+    .doc { border: 1px solid #ccc; border-radius: 8px; padding: 24px; }
+    .doc-header { display: flex; justify-content: space-between;
+                  border-bottom: 2px solid #1a5c3f; padding-bottom: 12px;
+                  margin-bottom: 16px; }
+    .doc-header .fr { text-align: left; }
+    .doc-header .ar { text-align: right; direction: rtl; }
+    .doc-header h1 { font-size: 18px; margin: 0 0 4px; color: #1a5c3f; }
+    .doc-title { text-align: center; font-size: 20px; font-weight: 700;
+                 margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
+    th { background: #f0f5f2; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .total-row { font-weight: 700; background: #eaf3ee; }
+    .meta { color: #555; font-size: 13px; }
+    .signature { display: flex; justify-content: space-between; margin-top: 48px; }
+    .signature div { width: 220px; border-top: 1px dotted #888;
+                     padding-top: 6px; text-align: center; font-size: 13px; }
+    .print-btn { margin: 16px 0; padding: 8px 20px; background: #1a5c3f;
+                 color: #fff; border: 0; border-radius: 6px; cursor: pointer;
+                 font-size: 14px; }
+    @media print { .print-btn { display: none; } .doc { border: 0; } }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">🖨 {% translate "Imprimer" %}</button>
+  <div class="doc">
+    <div class="doc-header">
+      <div class="fr">
+        <h1>Madrasati</h1>
+        <div class="meta">Établissement d'enseignement privé<br>Maroc</div>
+      </div>
+      <div class="ar">
+        <h1>مدرستي</h1>
+        <div class="meta">مؤسسة تعليمية خصوصية<br>المغرب</div>
+      </div>
+    </div>
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

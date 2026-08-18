@@ -1,0 +1,36 @@
+{% load i18n humanize %}
+<style>
+  .dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 12px; margin: 0 0 24px; }
+  .dash-card { background: var(--darkened-bg, #f8f8f8); border: 1px solid var(--border-color, #ddd);
+               border-radius: 8px; padding: 14px 16px; }
+  .dash-card .val { font-size: 26px; font-weight: 700; color: var(--link-fg, #1a5c3f); }
+  .dash-card .lbl { font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+                    color: var(--body-quiet-color, #666); margin-top: 2px; }
+</style>
+<div class="dash-cards">
+  <div class="dash-card">
+    <div class="val">{{ student_count }}</div>
+    <div class="lbl">{% translate "Élèves actifs" %}</div>
+  </div>
+  <div class="dash-card">
+    <div class="val">{{ enrollment_count }}</div>
+    <div class="lbl">{% translate "Inscriptions" %}{% if academic_year %} {{ academic_year }}{% endif %}</div>
+  </div>
+  <div class="dash-card">
+    <div class="val">{{ class_count }}</div>
+    <div class="lbl">{% translate "Classes" %}</div>
+  </div>
+  <div class="dash-card">
+    <div class="val">{{ employee_count }}</div>
+    <div class="lbl">{% translate "Employé(e)s" %}</div>
+  </div>
+  <div class="dash-card">
+    <div class="val">{{ month_revenue|intcomma }} DH</div>
+    <div class="lbl">{% translate "Encaissements du mois" %}</div>
+  </div>
+  <div class="dash-card">
+    <div class="val">{{ last_payroll_net|intcomma }} DH</div>
+    <div class="lbl">{% translate "Dernière paie" %}{% if last_payroll %} — {{ last_payroll }}{% endif %}</div>
+  </div>
+</div>

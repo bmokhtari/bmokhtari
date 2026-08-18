@@ -1,0 +1,52 @@
+{% extends "print_base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% translate "Reçu" %} {{ payment.receipt_number }}{% endblock %}
+
+{% block content %}
+  <div class="doc-title">
+    {% translate "Reçu de paiement" %} — وصل أداء<br>
+    <span class="meta">N° {{ payment.receipt_number }}</span>
+  </div>
+
+  <table>
+    <tr>
+      <th>{% translate "Élève" %} — التلميذ(ة)</th>
+      <td>
+        {{ payment.enrollment.student }}
+        {% if payment.enrollment.student.full_name_ar %}
+          — {{ payment.enrollment.student.full_name_ar }}
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>{% translate "Classe" %} — القسم</th>
+      <td>{{ payment.enrollment.school_class }}</td>
+    </tr>
+    <tr>
+      <th>{% translate "Type de paiement" %} — نوع الأداء</th>
+      <td>
+        {{ payment.get_kind_display }}
+        {% if payment.month %} — {{ payment.get_month_display }}{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>{% translate "Mode de paiement" %} — طريقة الأداء</th>
+      <td>{{ payment.get_method_display }}
+          {% if payment.reference %} ({{ payment.reference }}){% endif %}</td>
+    </tr>
+    <tr>
+      <th>{% translate "Date" %} — التاريخ</th>
+      <td>{{ payment.date }}</td>
+    </tr>
+    <tr class="total-row">
+      <th>{% translate "Montant" %} — المبلغ</th>
+      <td class="num">{{ payment.amount|intcomma }} DH — درهم</td>
+    </tr>
+  </table>
+
+  <div class="signature">
+    <div>{% translate "Signature du payeur" %}<br>توقيع الدافع</div>
+    <div>{% translate "Cachet et signature de l'école" %}<br>خاتم وتوقيع المدرسة</div>
+  </div>
+{% endblock %}

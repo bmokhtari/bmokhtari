@@ -1,0 +1,679 @@
+# Traduction arabe de Madrasati — logiciel de gestion d'école (Maroc).
+msgid ""
+msgstr ""
+"Project-Id-Version: madrasati\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+msgid "Madrasati — Gestion d'école"
+msgstr "مدرستي — تدبير المدرسة"
+
+msgid "Madrasati"
+msgstr "مدرستي"
+
+msgid "Tableau de bord"
+msgstr "لوحة القيادة"
+
+msgid "effectif"
+msgstr "عدد التلاميذ"
+
+msgid "année scolaire"
+msgstr "السنة الدراسية"
+
+msgid "Format : 2026-2027"
+msgstr "الصيغة : 2026-2027"
+
+msgid "date de début"
+msgstr "تاريخ البداية"
+
+msgid "date de fin"
+msgstr "تاريخ النهاية"
+
+msgid "année en cours"
+msgstr "السنة الجارية"
+
+msgid "années scolaires"
+msgstr "السنوات الدراسية"
+
+msgid "La date de début doit précéder la date de fin."
+msgstr "يجب أن يسبق تاريخ البداية تاريخ النهاية."
+
+msgid "Préscolaire"
+msgstr "التعليم الأولي"
+
+msgid "Primaire"
+msgstr "الابتدائي"
+
+msgid "Collège"
+msgstr "الإعدادي"
+
+msgid "Lycée"
+msgstr "الثانوي التأهيلي"
+
+msgid "cycle"
+msgstr "السلك"
+
+msgid "code"
+msgstr "الرمز"
+
+msgid "Ex. : 1AP, 6AP, 3AC, TC, 1BAC, 2BAC"
+msgstr "مثال : 1AP، 6AP، 3AC، TC، 1BAC، 2BAC"
+
+msgid "nom (français)"
+msgstr "الاسم العائلي (بالفرنسية)"
+
+msgid "nom (arabe)"
+msgstr "الاسم العائلي (بالعربية)"
+
+msgid "ordre"
+msgstr "الترتيب"
+
+msgid "niveau"
+msgstr "المستوى"
+
+msgid "niveaux"
+msgstr "المستويات"
+
+msgid "nom de la classe"
+msgstr "اسم القسم"
+
+msgid "Ex. : A, B, Groupe 1"
+msgstr "مثال : أ، ب، الفوج 1"
+
+msgid "capacité"
+msgstr "الطاقة الاستيعابية"
+
+msgid "professeur principal"
+msgstr "الأستاذ(ة) الرئيسي(ة)"
+
+msgid "classe"
+msgstr "القسم"
+
+msgid "classes"
+msgstr "الأقسام"
+
+msgid "coefficient"
+msgstr "المعامل"
+
+msgid "matière"
+msgstr "المادة"
+
+msgid "matières"
+msgstr "المواد"
+
+msgid "total annuel (DH)"
+msgstr "المجموع السنوي (درهم)"
+
+msgid "élève"
+msgstr "التلميذ(ة)"
+
+msgid "reçu"
+msgstr "الوصل"
+
+msgid "Imprimer"
+msgstr "طباعة"
+
+msgid "Septembre"
+msgstr "شتنبر"
+
+msgid "Octobre"
+msgstr "أكتوبر"
+
+msgid "Novembre"
+msgstr "نونبر"
+
+msgid "Décembre"
+msgstr "دجنبر"
+
+msgid "Janvier"
+msgstr "يناير"
+
+msgid "Février"
+msgstr "فبراير"
+
+msgid "Mars"
+msgstr "مارس"
+
+msgid "Avril"
+msgstr "أبريل"
+
+msgid "Mai"
+msgstr "ماي"
+
+msgid "Juin"
+msgstr "يونيو"
+
+msgid "Juillet"
+msgstr "يوليوز"
+
+msgid "Août"
+msgstr "غشت"
+
+msgid "frais d'inscription (DH)"
+msgstr "رسوم التسجيل (درهم)"
+
+msgid "Payés une fois à l'inscription."
+msgstr "تؤدى مرة واحدة عند التسجيل."
+
+msgid "mensualité (DH)"
+msgstr "الواجب الشهري (درهم)"
+
+msgid "Frais de scolarité mensuels."
+msgstr "واجبات التمدرس الشهرية."
+
+msgid "assurance scolaire (DH)"
+msgstr "التأمين المدرسي (درهم)"
+
+msgid "nombre de mensualités"
+msgstr "عدد الأشهر المؤداة"
+
+msgid "En général 10 (septembre à juin)."
+msgstr "عادة 10 أشهر (من شتنبر إلى يونيو)."
+
+msgid "formule de frais"
+msgstr "صيغة الواجبات"
+
+msgid "formules de frais"
+msgstr "صيغ الواجبات"
+
+msgid "Frais d'inscription"
+msgstr "رسوم التسجيل"
+
+msgid "Mensualité"
+msgstr "الواجب الشهري"
+
+msgid "Assurance scolaire"
+msgstr "التأمين المدرسي"
+
+msgid "Transport scolaire"
+msgstr "النقل المدرسي"
+
+msgid "Cantine"
+msgstr "المطعم المدرسي"
+
+msgid "Autre"
+msgstr "أخرى"
+
+msgid "Espèces"
+msgstr "نقدا"
+
+msgid "Chèque"
+msgstr "شيك"
+
+msgid "Virement bancaire"
+msgstr "تحويل بنكي"
+
+msgid "Carte bancaire"
+msgstr "بطاقة بنكية"
+
+msgid "inscription"
+msgstr "التسجيل"
+
+msgid "type de paiement"
+msgstr "نوع الأداء"
+
+msgid "mois concerné"
+msgstr "الشهر المعني"
+
+msgid "Pour les mensualités : le mois couvert par ce paiement."
+msgstr "بالنسبة للواجبات الشهرية : الشهر الذي يغطيه هذا الأداء."
+
+msgid "montant (DH)"
+msgstr "المبلغ (درهم)"
+
+msgid "mode de paiement"
+msgstr "طريقة الأداء"
+
+msgid "référence"
+msgstr "المرجع"
+
+msgid "N° de chèque ou de virement."
+msgstr "رقم الشيك أو التحويل."
+
+msgid "date de paiement"
+msgstr "تاريخ الأداء"
+
+msgid "n° de reçu"
+msgstr "رقم الوصل"
+
+msgid "encaissé par"
+msgstr "استخلص من طرف"
+
+msgid "remarque"
+msgstr "ملاحظة"
+
+msgid "paiement"
+msgstr "الأداء"
+
+msgid "paiements"
+msgstr "الأداءات"
+
+msgid "Identité"
+msgstr "الهوية"
+
+msgid "Poste"
+msgstr "المنصب"
+
+msgid "Coordonnées"
+msgstr "معلومات الاتصال"
+
+msgid "Rémunération"
+msgstr "الأجرة"
+
+msgid "salaire brut (DH)"
+msgstr "الأجر الإجمالي (درهم)"
+
+msgid "bulletin"
+msgstr "البيان"
+
+msgid "bulletins"
+msgstr "البيانات"
+
+msgid "total net (DH)"
+msgstr "مجموع الصافي (درهم)"
+
+msgid "coût employeur (DH)"
+msgstr "كلفة المشغل (درهم)"
+
+msgid "Générer les bulletins de paie"
+msgstr "إنشاء بيانات الأجور"
+
+msgid "Les cycles validés ou payés n'ont pas été modifiés."
+msgstr "لم يتم تعديل الدورات المصادق عليها أو المؤداة."
+
+msgid "Valider les cycles sélectionnés"
+msgstr "المصادقة على الدورات المحددة"
+
+msgid "%d cycle(s) validé(s)."
+msgstr "تمت المصادقة على %d دورة."
+
+msgid "Marquer comme payés"
+msgstr "وضع علامة مؤدى"
+
+msgid "%d cycle(s) marqué(s) payé(s)."
+msgstr "تم وضع علامة مؤدى على %d دورة."
+
+msgid "Enseignant(e)"
+msgstr "أستاذ(ة)"
+
+msgid "Administration"
+msgstr "الإدارة"
+
+msgid "Personnel de soutien"
+msgstr "أعوان الخدمة"
+
+msgid "Direction"
+msgstr "المديرية"
+
+msgid "matricule"
+msgstr "رقم التسجيل"
+
+msgid "prénom (français)"
+msgstr "الاسم الشخصي (بالفرنسية)"
+
+msgid "prénom (arabe)"
+msgstr "الاسم الشخصي (بالعربية)"
+
+msgid "CIN"
+msgstr "ب.ت.و"
+
+msgid "n° CNSS"
+msgstr "رقم CNSS"
+
+msgid "fonction"
+msgstr "الوظيفة"
+
+msgid "matières enseignées"
+msgstr "المواد المدرسة"
+
+msgid "téléphone"
+msgstr "الهاتف"
+
+msgid "e-mail"
+msgstr "البريد الإلكتروني"
+
+msgid "adresse"
+msgstr "العنوان"
+
+msgid "date d'embauche"
+msgstr "تاريخ التوظيف"
+
+msgid "salaire de base (DH)"
+msgstr "الأجر الأساسي (درهم)"
+
+msgid "primes imposables (DH)"
+msgstr "التعويضات الخاضعة للضريبة (درهم)"
+
+msgid "Primes mensuelles fixes soumises à cotisations et IR."
+msgstr "تعويضات شهرية قارة خاضعة للاشتراكات والضريبة على الدخل."
+
+msgid "personnes à charge"
+msgstr "الأشخاص المعالون"
+
+msgid "Conjoint et enfants, pour la déduction IR (max 6)."
+msgstr "الزوج(ة) والأبناء، لخصم الضريبة على الدخل (6 كحد أقصى)."
+
+msgid "RIB"
+msgstr "التعريف البنكي RIB"
+
+msgid "Relevé d'identité bancaire (24 chiffres)."
+msgstr "بيان الهوية البنكية (24 رقما)."
+
+msgid "actif"
+msgstr "نشيط"
+
+msgid "employé(e)"
+msgstr "مستخدم(ة)"
+
+msgid "employé(e)s"
+msgstr "المستخدمون"
+
+msgid "Brouillon"
+msgstr "مسودة"
+
+msgid "Validé"
+msgstr "مصادق عليه"
+
+msgid "Payé"
+msgstr "مؤدى"
+
+msgid "année"
+msgstr "السنة"
+
+msgid "mois"
+msgstr "الشهر"
+
+msgid "statut"
+msgstr "الحالة"
+
+msgid "créé le"
+msgstr "أنشئ في"
+
+msgid "cycle de paie"
+msgstr "دورة الأجور"
+
+msgid "cycles de paie"
+msgstr "دورات الأجور"
+
+msgid "CNSS salariale (DH)"
+msgstr "اشتراك CNSS للأجير (درهم)"
+
+msgid "AMO salariale (DH)"
+msgstr "اشتراك AMO للأجير (درهم)"
+
+msgid "net imposable (DH)"
+msgstr "الصافي الخاضع للضريبة (درهم)"
+
+msgid "déduction charges de famille (DH)"
+msgstr "خصم الأعباء العائلية (درهم)"
+
+msgid "IR (DH)"
+msgstr "الضريبة على الدخل (درهم)"
+
+msgid "salaire net (DH)"
+msgstr "الأجر الصافي (درهم)"
+
+msgid "bulletin de paie"
+msgstr "بيان الأجر"
+
+msgid "bulletins de paie"
+msgstr "بيانات الأجور"
+
+msgid "État civil"
+msgstr "الحالة المدنية"
+
+msgid "Identifiants officiels"
+msgstr "المعرفات الرسمية"
+
+msgid "Dossier scolaire"
+msgstr "الملف المدرسي"
+
+msgid "âge"
+msgstr "السن"
+
+msgid "classe actuelle"
+msgstr "القسم الحالي"
+
+msgid "Numéro marocain attendu, ex. 0612345678 ou +212612345678."
+msgstr "رقم هاتف مغربي، مثال 0612345678 أو 212612345678+."
+
+msgid "CIN invalide, ex. AB123456."
+msgstr "رقم بطاقة وطنية غير صحيح، مثال AB123456."
+
+msgid "Père"
+msgstr "الأب"
+
+msgid "Mère"
+msgstr "الأم"
+
+msgid "Tuteur légal"
+msgstr "الولي الشرعي"
+
+msgid "prénom"
+msgstr "الاسم الشخصي"
+
+msgid "nom"
+msgstr "الاسم العائلي"
+
+msgid "lien de parenté"
+msgstr "صلة القرابة"
+
+msgid "Carte d'identité nationale, ex. AB123456"
+msgstr "البطاقة الوطنية للتعريف، مثال AB123456"
+
+msgid "profession"
+msgstr "المهنة"
+
+msgid "tuteur"
+msgstr "ولي الأمر"
+
+msgid "tuteurs"
+msgstr "أولياء الأمور"
+
+msgid "Garçon"
+msgstr "ذكر"
+
+msgid "Fille"
+msgstr "أنثى"
+
+msgid "sexe"
+msgstr "الجنس"
+
+msgid "date de naissance"
+msgstr "تاريخ الازدياد"
+
+msgid "lieu de naissance"
+msgstr "مكان الازدياد"
+
+msgid "code Massar"
+msgstr "رمز مسار"
+
+msgid "Code national de l'élève (système Massar du ministère), ex. G123456789"
+msgstr "الرمز الوطني للتلميذ (منظومة مسار)، مثال G123456789"
+
+msgid "ville"
+msgstr "المدينة"
+
+msgid "observations médicales"
+msgstr "ملاحظات طبية"
+
+msgid "établissement précédent"
+msgstr "المؤسسة السابقة"
+
+msgid "date d'inscription"
+msgstr "تاريخ التسجيل"
+
+msgid "élèves"
+msgstr "التلاميذ"
+
+msgid "Inscrit"
+msgstr "مسجل(ة)"
+
+msgid "Transféré"
+msgstr "محول(ة)"
+
+msgid "Retiré"
+msgstr "منسحب(ة)"
+
+msgid "Diplômé"
+msgstr "متخرج(ة)"
+
+msgid "remise (%)"
+msgstr "التخفيض (%)"
+
+msgid "Remise accordée (fratrie, bourse…), en pourcentage."
+msgstr "تخفيض ممنوح (إخوة، منحة...)، بالنسبة المئوية."
+
+msgid "inscriptions"
+msgstr "التسجيلات"
+
+msgid "Absence"
+msgstr "غياب"
+
+msgid "Retard"
+msgstr "تأخر"
+
+msgid "date"
+msgstr "التاريخ"
+
+msgid "type"
+msgstr "النوع"
+
+msgid "justifiée"
+msgstr "مبررة"
+
+msgid "absence / retard"
+msgstr "غياب / تأخر"
+
+msgid "absences / retards"
+msgstr "الغيابات / التأخرات"
+
+msgid "1er semestre"
+msgstr "الأسدوس الأول"
+
+msgid "2e semestre"
+msgstr "الأسدوس الثاني"
+
+msgid "semestre"
+msgstr "الأسدوس"
+
+msgid "intitulé"
+msgstr "العنوان"
+
+msgid "Ex. : Contrôle 1, Devoir surveillé"
+msgstr "مثال : الفرض 1، فرض محروس"
+
+msgid "note (/20)"
+msgstr "النقطة (/20)"
+
+msgid "note"
+msgstr "النقطة"
+
+msgid "notes"
+msgstr "النقط"
+
+msgid "Élèves actifs"
+msgstr "التلاميذ النشيطون"
+
+msgid "Inscriptions"
+msgstr "التسجيلات"
+
+msgid "Classes"
+msgstr "الأقسام"
+
+msgid "Employé(e)s"
+msgstr "المستخدمون"
+
+msgid "Encaissements du mois"
+msgstr "مداخيل الشهر"
+
+msgid "Dernière paie"
+msgstr "آخر أداء للأجور"
+
+msgid "Reçu"
+msgstr "وصل"
+
+msgid "Reçu de paiement"
+msgstr "وصل أداء"
+
+msgid "Élève"
+msgstr "التلميذ(ة)"
+
+msgid "Classe"
+msgstr "القسم"
+
+msgid "Type de paiement"
+msgstr "نوع الأداء"
+
+msgid "Mode de paiement"
+msgstr "طريقة الأداء"
+
+msgid "Date"
+msgstr "التاريخ"
+
+msgid "Montant"
+msgstr "المبلغ"
+
+msgid "Signature du payeur"
+msgstr "توقيع الدافع"
+
+msgid "Cachet et signature de l'école"
+msgstr "خاتم وتوقيع المدرسة"
+
+msgid "Bulletin de paie"
+msgstr "بيان الأجر"
+
+msgid "Employé(e)"
+msgstr "المستخدم(ة)"
+
+msgid "Fonction"
+msgstr "الوظيفة"
+
+msgid "N° CNSS"
+msgstr "رقم CNSS"
+
+msgid "Rubrique"
+msgstr "البيان"
+
+msgid "Montant (DH)"
+msgstr "المبلغ (درهم)"
+
+msgid "Salaire brut"
+msgstr "الأجر الإجمالي"
+
+msgid "CNSS (part salariale, 4,48 %%)"
+msgstr "الضمان الاجتماعي (حصة الأجير، %%4,48)"
+
+msgid "AMO (part salariale, 2,26 %%)"
+msgstr "التأمين الإجباري عن المرض (حصة الأجير، %%2,26)"
+
+msgid "Net imposable"
+msgstr "الصافي الخاضع للضريبة"
+
+msgid "Déduction charges de famille"
+msgstr "خصم الأعباء العائلية"
+
+msgid "Impôt sur le revenu (IR)"
+msgstr "الضريبة على الدخل"
+
+msgid "Salaire net à payer"
+msgstr "صافي الأجر المستحق"
+
+msgid "Coût total employeur (charges patronales comprises)"
+msgstr "الكلفة الإجمالية للمشغل (بما فيها التحملات)"
+
+msgid "Signature de l'employé(e)"
+msgstr "توقيع المستخدم(ة)"
+
+msgid "%d bulletin généré."
+msgid_plural "%d bulletins générés."
+msgstr[0] "لم يتم إنشاء أي بيان أجر (%d)."
+msgstr[1] "تم إنشاء بيان أجر واحد (%d)."
+msgstr[2] "تم إنشاء بياني أجر (%d)."
+msgstr[3] "تم إنشاء %d بيانات أجور."
+msgstr[4] "تم إنشاء %d بيان أجر."
+msgstr[5] "تم إنشاء %d بيان أجر."

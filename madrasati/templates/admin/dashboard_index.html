@@ -1,0 +1,7 @@
+{% extends "admin/index.html" %}
+{% load dashboard %}
+
+{% block content %}
+  {% dashboard_stats %}
+  {{ block.super }}
+{% endblock %}

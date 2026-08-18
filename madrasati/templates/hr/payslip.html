@@ -1,0 +1,57 @@
+{% extends "print_base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% translate "Bulletin de paie" %} — {{ payslip.employee }}{% endblock %}
+
+{% block content %}
+  <div class="doc-title">
+    {% translate "Bulletin de paie" %} — بيان الأجر<br>
+    <span class="meta">{{ payslip.payroll_run }}</span>
+  </div>
+
+  <table>
+    <tr>
+      <th>{% translate "Employé(e)" %} — المستخدم(ة)</th>
+      <td>{{ payslip.employee }}
+          {% if payslip.employee.first_name_ar %}
+            — {{ payslip.employee.first_name_ar }} {{ payslip.employee.last_name_ar }}
+          {% endif %}</td>
+    </tr>
+    <tr>
+      <th>{% translate "Fonction" %} — الوظيفة</th>
+      <td>{{ payslip.employee.get_role_display }}</td>
+    </tr>
+    <tr>
+      <th>CIN / {% translate "N° CNSS" %}</th>
+      <td>{{ payslip.employee.cin }} / {{ payslip.employee.cnss_number|default:"—" }}</td>
+    </tr>
+  </table>
+
+  <table>
+    <tr><th>{% translate "Rubrique" %} — البيان</th>
+        <th style="text-align:right">{% translate "Montant (DH)" %} — المبلغ</th></tr>
+    <tr><td>{% translate "Salaire brut" %} — الأجر الإجمالي</td>
+        <td class="num">{{ payslip.gross|intcomma }}</td></tr>
+    <tr><td>{% translate "CNSS (part salariale, 4,48 %)" %} — الضمان الاجتماعي</td>
+        <td class="num">− {{ payslip.cnss|intcomma }}</td></tr>
+    <tr><td>{% translate "AMO (part salariale, 2,26 %)" %} — التأمين الإجباري عن المرض</td>
+        <td class="num">− {{ payslip.amo|intcomma }}</td></tr>
+    <tr><td>{% translate "Net imposable" %} — الأجر الخاضع للضريبة</td>
+        <td class="num">{{ payslip.taxable|intcomma }}</td></tr>
+    <tr><td>{% translate "Déduction charges de famille" %} — خصم الأعباء العائلية</td>
+        <td class="num">− {{ payslip.family_deduction|intcomma }}</td></tr>
+    <tr><td>{% translate "Impôt sur le revenu (IR)" %} — الضريبة على الدخل</td>
+        <td class="num">− {{ payslip.ir|intcomma }}</td></tr>
+    <tr class="total-row">
+      <td>{% translate "Salaire net à payer" %} — صافي الأجر</td>
+      <td class="num">{{ payslip.net|intcomma }}</td></tr>
+  </table>
+
+  <p class="meta">{% translate "Coût total employeur (charges patronales comprises)" %} :
+     {{ payslip.employer_cost|intcomma }} DH</p>
+
+  <div class="signature">
+    <div>{% translate "Signature de l'employé(e)" %}<br>توقيع المستخدم(ة)</div>
+    <div>{% translate "Cachet et signature de l'école" %}<br>خاتم وتوقيع المدرسة</div>
+  </div>
+{% endblock %}
