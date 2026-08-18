@@ -97,6 +97,23 @@ L'application est alors accessible sur `https://madrasati.onrender.com`
 > définir la variable d'environnement `DATABASE_URL` — elle est prise en
 > charge automatiquement.
 
+### Auto-hébergement (Docker)
+
+Pour héberger soi-même (PC de l'école, VPS…) avec données persistantes :
+
+```bash
+docker compose up -d
+```
+
+Puis ouvrir <http://localhost:8000> (compte `admin`, mot de passe défini
+dans [`docker-compose.yml`](docker-compose.yml) — à changer, ainsi que
+`DJANGO_SECRET_KEY`, avant toute mise en production). La base SQLite est
+conservée dans un volume Docker entre les redémarrages.
+
+> GitHub ne propose pas d'hébergement applicatif : GitHub Pages ne sert
+> que des sites statiques, et les « self-hosted runners » servent à la CI,
+> pas à faire tourner une application.
+
 ## Tests
 
 ```bash
