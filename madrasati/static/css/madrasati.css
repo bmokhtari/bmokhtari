@@ -262,8 +262,13 @@ h2, h3 { font-family: var(--m-serif); font-weight: 500; letter-spacing: -.01em; 
   padding: 12px 18px;
   border-bottom: 1px solid var(--m-line);
 }
+/* Django colore ces liens avec « a.section:link » (spécificité plus forte
+   que « .module caption a ») : sans ces sélecteurs, les intitulés
+   d'application restaient ivoire sur ivoire, donc illisibles. */
+.module caption a.section:link, .module caption a.section:visited,
+.module > h2 a.section:link, .module > h2 a.section:visited,
 .module caption a, .module > h2 a { color: var(--m-green-900); }
-.module caption a:hover, .module > h2 a:hover { color: var(--m-green-700); }
+.module caption a.section:hover, .module > h2 a.section:hover { color: var(--m-green-700); }
 /* La première colonne (nom du modèle) doit occuper la place restante,
    sinon les libellés se coupent en plein mot. */
 .dashboard .module table th { width: 100%; overflow-wrap: normal; }
@@ -439,6 +444,8 @@ body.m-login-page .content, body.m-login-page #content {
   padding: 0; margin: 0; max-width: none; width: 100%;
 }
 body.m-login-page #footer { display: none; }
+
+.m-login, .m-login *, .m-dash, .m-dash * { box-sizing: border-box; }
 
 .m-login {
   display: flex;
@@ -722,6 +729,9 @@ body.m-login-page #footer { display: none; }
   font-variant-numeric: tabular-nums;
 }
 .m-bar-track:hover .m-bar-tip, .m-bar-track:focus-within .m-bar-tip { opacity: 1; }
+/* Sur écran tactile, l'infobulle reste « collée » après un appui :
+   les chiffres sont de toute façon listés sous le graphique. */
+@media (hover: none) { .m-bar-tip { display: none; } }
 .m-bar-x {
   text-align: center;
   font-size: 11px;
@@ -847,3 +857,140 @@ html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left
 
 /* Montants : îlot directionnel + chiffres tabulaires. */
 .m-money { unicode-bidi: isolate; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ====================================================================
+   Affichage mobile (téléphones et petites tablettes)
+   ==================================================================== */
+
+@media (max-width: 1024px) {
+  /* Le panneau illustré de la connexion passe au-dessus du formulaire :
+     sans annuler la base flex, il gardait 320 px et débordait de l'écran. */
+  .m-login-art {
+    flex: none;
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 767px) {
+  /* --- En-tête ------------------------------------------------------
+     responsive.css de Django est chargé APRÈS cette feuille : ses règles
+     l'emportent à spécificité égale. On préfixe par « body » pour rendre
+     la main à la mise en page mobile de Madrasati. */
+  body #header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 14px;
+    /* #container est un conteneur flex vertical : sans « flex: none »
+       (et avec min-height:0) l'en-tête se comprimait jusqu'à disparaître,
+       son contenu étant rogné par overflow:hidden. */
+    flex: none;
+    min-height: auto;
+    height: auto;
+  }
+  body #branding, body #user-tools { flex: 0 0 auto; width: 100%; }
+  .m-brand-name { font-size: 17px; }
+  .m-brand-ar { font-size: 10.5px; }
+  #user-tools {
+    font-size: 11.5px;
+    line-height: 1.5;
+    word-spacing: normal;
+  }
+  #header::after { width: 150px; height: 110px; }
+
+  div.breadcrumbs { padding: 9px 14px; font-size: 11.5px; }
+
+  /* --- Contenu ------------------------------------------------------ */
+  #content { padding: 16px 14px 32px; }
+  body.m-login-page #main #content, body.m-login-page #main .content { padding: 0; }
+  .m-login-art { padding: 26px 22px; gap: 18px; }
+  .m-login-head { font-size: 24px; }
+  .m-login-sub { font-size: 14px; }
+  .m-login-panel { padding: 28px 22px 36px; }
+  #content > h1, .colM h1, #content-main > h1 { font-size: 21px; margin-bottom: 12px; }
+
+  /* --- Tableau de bord --------------------------------------------- */
+  .m-tiles { grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px; }
+  .m-tile { padding: 12px 13px 13px; }
+  .m-tile-v { font-size: 23px; }
+  .m-tile-v span { font-size: 13px; }
+  .m-tile-k { font-size: 10px; letter-spacing: .08em; }
+  .m-tile-s { font-size: 11px; }
+
+  .m-card-h { padding: 12px 14px 10px; }
+  .m-card-h h2 { font-size: 15px; }
+  .m-card-note { font-size: 11px; }
+
+  .m-chart { padding: 16px 12px 4px; }
+  .m-chart-plot { height: 140px; }
+  .m-bar { border-radius: 3px 3px 0 0; }
+  .m-bar-x { font-size: 9.5px; padding-top: 5px; }
+  .m-chart-foot { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 14px; }
+  .m-foot-v { font-size: 15px; }
+
+  .m-list li { padding: 10px 14px; gap: 9px; }
+  .m-list-main a { font-size: 13px; }
+  .m-av { width: 28px; height: 28px; font-size: 11px; }
+  .m-amount { font-size: 13px; }
+
+  /* Les modules de l'accueil s'empilent, et leurs libellés peuvent
+     revenir à la ligne (ils étaient forcés sur une seule ligne). */
+  .dashboard #content-main { grid-template-columns: minmax(0, 1fr); }
+  .dashboard .module table, .dashboard .module tbody { display: block; width: 100%; }
+  /* Un <caption> dans un tableau passé en display:block perd sa mise en
+     forme : on le rétablit en bandeau de carte. */
+  .dashboard .module caption {
+    display: block;
+    background: var(--m-surface-2);
+    color: var(--m-green-900);
+    border-bottom: 1px solid var(--m-line);
+    padding: 11px 14px;
+  }
+  .dashboard .module tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 14px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--m-hair);
+  }
+  .dashboard .module tr:last-child { border-bottom: 0; }
+  .dashboard .module th, .dashboard .module td {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+    white-space: normal;
+  }
+  .dashboard .module th { flex: 1 1 100%; font-weight: 500; }
+  .dashboard .module td { font-size: 12.5px; }
+
+  /* --- Listes d'objets ---------------------------------------------- */
+  #changelist #toolbar { padding: 10px 12px; }
+  #changelist-search input[type=text],
+  #toolbar #searchbar { min-width: 0; width: 100%; box-sizing: border-box; }
+  #changelist .actions { padding: 9px 12px; }
+  #changelist-filter { margin: 12px 0 0; width: 100%; }
+  #changelist table tbody td, #changelist table tbody th,
+  .results tbody td, .results tbody th { padding: 10px 12px; font-size: 13px; }
+
+  /* --- Formulaires --------------------------------------------------- */
+  .form-row { padding: 11px 14px; }
+  input[type=text], input[type=password], input[type=email], input[type=url],
+  input[type=number], input[type=tel], input[type=date], input[type=time],
+  textarea, select, .vTextField {
+    max-width: 100%;
+    /* 16 px : en dessous, iOS zoome automatiquement sur le champ actif. */
+    font-size: 16px;
+  }
+  .submit-row { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .submit-row input, .submit-row a { width: 100%; text-align: center; }
+  /* Les tableaux en ligne (inscriptions, paiements) défilent seuls. */
+  .inline-group .tabular, .inline-group .module,
+  fieldset .form-row .related-widget-wrapper { overflow-x: auto; }
+  .object-tools { margin-top: 0; }
+  .object-tools a, .object-tools a:link, .object-tools a:visited { font-size: 12.5px; padding: 8px 12px; }
+}
