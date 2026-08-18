@@ -57,7 +57,7 @@ French/Arabic interface with RTL support.
 ## Démarrage
 
 ```bash
-cd madrasati
+git clone https://github.com/bmokhtari/SchoolRepo.git && cd SchoolRepo
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py seed            # niveaux marocains, matières, frais
@@ -74,6 +74,28 @@ Pour recompiler les traductions arabes après modification :
 python manage.py makemessages -l ar
 python manage.py compilemessages   # nécessite gettext
 ```
+
+## Hébergement
+
+GitHub ne peut pas exécuter l'application (GitHub Pages ne sert que des
+sites statiques) : il faut un hébergeur Python. Le dépôt est prêt pour un
+déploiement en un clic sur **Render** :
+
+1. Créer un compte sur <https://render.com> (offre gratuite).
+2. **New +** → **Blueprint** → connecter ce dépôt GitHub.
+3. Render lit [`render.yaml`](render.yaml) : build, migrations, données de
+   base et compte `admin` sont créés automatiquement (mot de passe généré,
+   visible dans l'onglet *Environment* du service).
+
+L'application est alors accessible sur `https://madrasati.onrender.com`
+(ou similaire). Fonctionne aussi sur Railway ou Heroku via le
+[`Procfile`](Procfile).
+
+> 💡 Sur l'offre gratuite de Render, le disque est éphémère : la base
+> SQLite est réinitialisée à chaque déploiement. Pour des données
+> persistantes, créer une base **PostgreSQL** (Render en propose) et
+> définir la variable d'environnement `DATABASE_URL` — elle est prise en
+> charge automatiquement.
 
 ## Tests
 
