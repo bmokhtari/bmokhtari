@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: madrasati\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-18 21:00+0100\n"
+"POT-Creation-Date: 2026-08-18 22:15+0100\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -196,7 +196,7 @@ msgid "reçu"
 msgstr "الوصل"
 
 #: finance/admin.py:43 hr/admin.py:54 hr/admin.py:128
-#: templates/print_base.html:130
+#: templates/print_base.html:149
 msgid "Imprimer"
 msgstr "طباعة"
 
@@ -818,6 +818,35 @@ msgstr "النقطة"
 msgid "notes"
 msgstr "النقط"
 
+#: templates/admin/change_list.html:36
+msgid "Aucun résultat"
+msgstr "لا توجد نتائج"
+
+#: templates/admin/change_list.html:38
+#, python-format
+msgid "Aucun élément ne correspond à cette recherche parmi les %(name)s."
+msgstr "لا يوجد أي عنصر يطابق هذا البحث ضمن %(name)s."
+
+
+#: templates/admin/change_list.html:43
+msgid "Effacer les filtres"
+msgstr "مسح عوامل التصفية"
+
+#: templates/admin/change_list.html:47
+#, python-format
+msgid "Aucun élément dans « %(name)s »"
+msgstr "لا يوجد أي عنصر في «%(name)s»"
+
+
+#: templates/admin/change_list.html:51
+msgid "Cette liste se remplira au fur et à mesure des saisies."
+msgstr "ستمتلئ هذه اللائحة تدريجيا مع إدخال البيانات."
+
+#: templates/admin/change_list.html:54
+#, python-format
+msgid "Ajouter %(name)s"
+msgstr "إضافة %(name)s"
+
 #: templates/admin/dashboard_stats.html:3
 msgid "Résumé de l’établissement"
 msgstr "ملخص المؤسسة"
@@ -938,13 +967,15 @@ msgstr "لم يسجل أي أداء."
 #: templates/admin/login.html:25
 msgid ""
 "La gestion de votre école, du dossier d'inscription au bulletin de paie."
-msgstr ""
+msgstr "تدبير مدرستك، من ملف التسجيل إلى بيان الأجر."
+
 
 #: templates/admin/login.html:26
 msgid ""
 "Inscriptions, scolarité en dirhams, reçus et paie CNSS / AMO / IR — en "
 "français et en arabe."
-msgstr ""
+msgstr "التسجيلات، واجبات التمدرس بالدرهم، الوصولات والأجور (CNSS / AMO / IR) — بالفرنسية والعربية."
+
 
 #: templates/admin/login.html:28
 msgid "Élèves, tuteurs et inscriptions"
@@ -979,7 +1010,8 @@ msgstr "يرجى تصحيح الأخطاء أدناه."
 msgid ""
 "Vous êtes connecté en tant que %(username)s, mais n'avez pas accès à cette "
 "page."
-msgstr ""
+msgstr "أنت متصل باسم %(username)s، لكن ليس لديك حق الولوج إلى هذه الصفحة."
+
 
 #: templates/admin/login.html:71
 msgid "Mot de passe oublié ?"
@@ -993,7 +1025,8 @@ msgstr "دخول"
 msgid ""
 "Accès protégé. Les connexions sont enregistrées conformément au règlement "
 "intérieur de l'établissement."
-msgstr ""
+msgstr "ولوج محمي. تسجل عمليات الدخول وفقا للنظام الداخلي للمؤسسة."
+
 
 #: templates/finance/receipt.html:4
 msgid "Reçu"
@@ -1125,7 +1158,7 @@ msgstr "توقيع المستخدم(ة)"
 msgid "Document à conserver sans limitation de durée"
 msgstr "وثيقة يجب الاحتفاظ بها دون تحديد مدة"
 
-#: templates/print_base.html:131
+#: templates/print_base.html:150
 msgid "Retour"
 msgstr "رجوع"
 

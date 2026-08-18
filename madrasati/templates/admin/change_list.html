@@ -1,0 +1,68 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% comment %}
+  Surcharge de la liste d'objets : Django affiche une page presque vide
+  (un cadre blanc et « 0 éléments ») quand il n'y a rien à lister.
+  On y substitue un état vide explicite, avec l'action à faire ensuite.
+{% endcomment %}
+
+{% comment %}
+  Titre de page : « Sélectionnez l'objet … à changer » est verbeux ;
+  le nom du modèle suffit, le fil d'Ariane donne déjà le contexte.
+{% endcomment %}
+{% block content_title %}<h1>{{ cl.opts.verbose_name_plural|capfirst }}</h1>{% endblock %}
+
+{% comment %}Rien à chercher tant que la liste est vide.{% endcomment %}
+{% block search %}
+  {% if cl.result_count or cl.query or cl.has_active_filters %}{{ block.super }}{% endif %}
+{% endblock %}
+
+{% block result_list %}
+  {% if cl.result_count %}
+    {{ block.super }}
+  {% else %}
+    <div class="m-blank">
+      <svg width="46" height="46" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="44" height="44" rx="12" fill="#E6F0EA" stroke="#C9DED2"/>
+        <g stroke="#14573D" stroke-width="1.6" fill="none" stroke-linecap="round">
+          <rect x="14" y="12" width="18" height="22" rx="3"/>
+          <path d="M18 19h10M18 24h10M18 29h6"/>
+        </g>
+      </svg>
+
+      {% if cl.has_active_filters or cl.query %}
+        <h2>{% translate "Aucun résultat" %}</h2>
+        <p>
+          {% blocktranslate trimmed with name=cl.opts.verbose_name_plural %}
+            Aucun élément ne correspond à cette recherche parmi les {{ name }}.
+          {% endblocktranslate %}
+        </p>
+        {% if cl.has_active_filters %}
+          <a class="m-blank-btn ghost" href="{{ cl.clear_all_filters_qs }}">{% translate "Effacer les filtres" %}</a>
+        {% endif %}
+      {% else %}
+        <h2>
+          {% blocktranslate trimmed with name=cl.opts.verbose_name_plural %}
+            Aucun élément dans « {{ name }} »
+          {% endblocktranslate %}
+        </h2>
+        <p>{% translate "Cette liste se remplira au fur et à mesure des saisies." %}</p>
+        {% if has_add_permission %}
+          <a class="m-blank-btn" href="{% url cl.opts|admin_urlname:'add' %}">
+            {% blocktranslate trimmed with name=cl.opts.verbose_name %}Ajouter {{ name }}{% endblocktranslate %}
+          </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% comment %}Sans données ni filtre actif, la colonne de filtres n'a rien à filtrer.{% endcomment %}
+{% block filters %}
+  {% if cl.result_count or cl.has_active_filters or cl.query %}{{ block.super }}{% endif %}
+{% endblock %}
+
+{% block pagination %}
+  {% if cl.result_count %}{{ block.super }}{% endif %}
+{% endblock %}

@@ -993,4 +993,73 @@ html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left
   fieldset .form-row .related-widget-wrapper { overflow-x: auto; }
   .object-tools { margin-top: 0; }
   .object-tools a, .object-tools a:link, .object-tools a:visited { font-size: 12.5px; padding: 8px 12px; }
+  /* Conserver la gouttière de l'icône « + », sinon elle chevauche le texte. */
+  .object-tools a.addlink, .object-tools a.viewsitelink { padding-right: 30px; }
+  html[dir="rtl"] .object-tools a.addlink,
+  html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 12px; padding-left: 30px; }
+}
+
+/* ------------------------------------------------------------ État vide */
+
+/* Django réserve 400 px de hauteur aux listes filtrables (#changelist.filtered)
+   pour loger la colonne de filtres ; quand celle-ci est masquée, cela laissait
+   un grand vide sous le message. */
+#changelist:has(.m-blank) { min-height: 0; }
+
+.m-blank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 52px 24px 56px;
+  background: var(--m-surface);
+}
+.m-blank svg { margin-bottom: 12px; }
+.m-blank h2 {
+  font-family: var(--m-serif);
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--m-ink);
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-transform: none;
+  letter-spacing: -.01em;
+}
+.m-blank p {
+  color: var(--m-muted);
+  font-size: 13.5px;
+  margin: 0;
+  max-width: 42ch;
+  line-height: 1.6;
+}
+.m-blank-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--m-radius-sm);
+  background: var(--m-green-700);
+  color: #FFF8EC;
+  border: 1px solid var(--m-green-900);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.m-blank-btn:link, .m-blank-btn:visited { color: #FFF8EC; }
+.m-blank-btn:hover { background: var(--m-green-900); color: #FFF8EC; }
+.m-blank-btn.ghost {
+  background: var(--m-surface);
+  color: var(--m-green-700);
+  border-color: var(--m-sand);
+}
+.m-blank-btn.ghost:link, .m-blank-btn.ghost:visited { color: var(--m-green-700); }
+.m-blank-btn.ghost:hover { background: var(--m-surface-2); color: var(--m-green-900); }
+
+@media (max-width: 767px) {
+  .m-blank { padding: 38px 18px 42px; }
+  .m-blank h2 { font-size: 17px; }
 }
