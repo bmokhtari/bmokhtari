@@ -1,6 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, render
 
+from .amount_words import amount_in_words
 from .models import Payment
 
 
@@ -15,4 +16,7 @@ def receipt_view(request, payment_id):
         ),
         pk=payment_id,
     )
-    return render(request, "finance/receipt.html", {"payment": payment})
+    return render(request, "finance/receipt.html", {
+        "payment": payment,
+        "amount_in_words": amount_in_words(payment.amount),
+    })

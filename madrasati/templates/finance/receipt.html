@@ -1,52 +1,103 @@
 {% extends "print_base.html" %}
-{% load i18n humanize %}
+{% load i18n madrasati %}
 
 {% block title %}{% translate "Reçu" %} {{ payment.receipt_number }}{% endblock %}
+{% block sheet_class %}sheet--compact{% endblock %}
+{% block back_url %}{% url 'admin:finance_payment_change' payment.pk %}{% endblock %}
 
 {% block content %}
   <div class="doc-title">
-    {% translate "Reçu de paiement" %} — وصل أداء<br>
-    <span class="meta">N° {{ payment.receipt_number }}</span>
+    <h1>{% translate "Reçu de paiement" %}</h1>
+    <div class="ar-title ar" dir="rtl">وصل أداء</div>
+    <div class="doc-ref">
+      <b class="num">{{ payment.receipt_number }}</b>
+      <i aria-hidden="true"></i>
+      <span class="num">{{ payment.date|date:"d/m/Y" }}</span>
+    </div>
   </div>
 
-  <table>
-    <tr>
-      <th>{% translate "Élève" %} — التلميذ(ة)</th>
-      <td>
-        {{ payment.enrollment.student }}
-        {% if payment.enrollment.student.full_name_ar %}
-          — {{ payment.enrollment.student.full_name_ar }}
-        {% endif %}
-      </td>
-    </tr>
-    <tr>
-      <th>{% translate "Classe" %} — القسم</th>
-      <td>{{ payment.enrollment.school_class }}</td>
-    </tr>
-    <tr>
-      <th>{% translate "Type de paiement" %} — نوع الأداء</th>
-      <td>
-        {{ payment.get_kind_display }}
-        {% if payment.month %} — {{ payment.get_month_display }}{% endif %}
-      </td>
-    </tr>
-    <tr>
-      <th>{% translate "Mode de paiement" %} — طريقة الأداء</th>
-      <td>{{ payment.get_method_display }}
-          {% if payment.reference %} ({{ payment.reference }}){% endif %}</td>
-    </tr>
-    <tr>
-      <th>{% translate "Date" %} — التاريخ</th>
-      <td>{{ payment.date }}</td>
-    </tr>
-    <tr class="total-row">
-      <th>{% translate "Montant" %} — المبلغ</th>
-      <td class="num">{{ payment.amount|intcomma }} DH — درهم</td>
-    </tr>
-  </table>
+  <div class="lines">
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Élève" %} <span class="ar">— التلميذ(ة)</span></div>
+        <div class="val">{{ payment.enrollment.student }}</div>
+      </div>
+      {% if payment.enrollment.student.full_name_ar %}
+        <div class="ar val val-ar" dir="rtl">{{ payment.enrollment.student.full_name_ar }}</div>
+      {% endif %}
+    </div>
 
-  <div class="signature">
-    <div>{% translate "Signature du payeur" %}<br>توقيع الدافع</div>
-    <div>{% translate "Cachet et signature de l'école" %}<br>خاتم وتوقيع المدرسة</div>
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Classe" %} <span class="ar">— القسم</span></div>
+        <div class="val num">{{ payment.enrollment.school_class.level.code }} - {{ payment.enrollment.school_class.name }}</div>
+      </div>
+      <div class="ar val-ar" dir="rtl" style="font-size: 14px; color: var(--muted)">
+        السنة الدراسية <span class="num">{{ payment.enrollment.school_class.academic_year }}</span>
+      </div>
+    </div>
+
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Objet du paiement" %} <span class="ar">— موضوع الأداء</span></div>
+        <div class="val">
+          {{ payment.get_kind_display }}{% if payment.month %} — {{ payment.get_month_display }}{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Mode de règlement" %} <span class="ar">— طريقة الأداء</span></div>
+        <div class="val">
+          {{ payment.get_method_display }}{% if payment.reference %} <span class="num">({{ payment.reference }})</span>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if payment.note %}
+      <div class="line">
+        <div>
+          <div class="lbl">{% translate "Remarque" %} <span class="ar">— ملاحظة</span></div>
+          <div class="val" style="font-weight: 400">{{ payment.note }}</div>
+        </div>
+      </div>
+    {% endif %}
   </div>
+
+  <div class="amount">
+    <div>
+      <div class="k">{% translate "Montant réglé" %} <span class="ar">— المبلغ المؤدى</span></div>
+      <div class="v num">{{ payment.amount|dh:2 }}</div>
+    </div>
+    <div class="ar" dir="rtl" style="text-align: right">
+      <div class="k">المبلغ</div>
+      <div class="v-ar num">{{ payment.amount|dirhams:2 }} درهم</div>
+    </div>
+  </div>
+
+  <div class="in-words">
+    {% translate "Arrêté le présent reçu à la somme de" %} :
+    <strong>{{ amount_in_words }}</strong>.
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="signatures">
+    <div>
+      <div class="sig-space"></div>
+      <div class="sig-label">{% translate "Signature du payeur" %}<br><span class="ar">توقيع الدافع</span></div>
+    </div>
+    <div>
+      <div class="sig-space"></div>
+      <div class="sig-label">{% translate "Cachet et signature de l'école" %}<br><span class="ar">خاتم وتوقيع المدرسة</span></div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>{% translate "Reçu à conserver" %} — <span class="ar">وصل يجب الاحتفاظ به</span></span>
+    <span class="num">
+      {% if payment.received_by %}{% translate "Encaissé par" %} : {{ payment.received_by.get_full_name|default:payment.received_by.username }} · {% endif %}{{ payment.date|date:"d/m/Y" }}
+    </span>
+  </footer>
 {% endblock %}

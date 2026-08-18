@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_("Madrasati") }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/madrasati.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+  <a class="m-brand" href="{% url 'admin:index' %}">
+    {% include "admin/madrasati_logo.html" %}
+    <span>
+      <span class="m-brand-name">Madrasati</span>
+      <span class="m-brand-ar" dir="rtl">مدرستي</span>
+    </span>
+  </a>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

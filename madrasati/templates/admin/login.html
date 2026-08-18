@@ -1,0 +1,83 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block bodyclass %}{{ block.super }} login m-login-page{% endblock %}
+{% block header %}{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block messages %}{% endblock %}
+
+{% block content %}
+<div class="m-login">
+
+  <aside class="m-login-art">
+    <div class="m-login-brand">
+      {% include "admin/madrasati_logo.html" %}
+      <span>
+        <span class="m-brand-name">Madrasati</span>
+        <span class="m-brand-ar" dir="rtl">مدرستي</span>
+      </span>
+    </div>
+
+    <div>
+      <h2 class="m-login-head">{% translate "La gestion de votre école, du dossier d'inscription au bulletin de paie." %}</h2>
+      <p class="m-login-sub">{% translate "Inscriptions, scolarité en dirhams, reçus et paie CNSS / AMO / IR — en français et en arabe." %}</p>
+      <ul class="m-login-list">
+        <li>{% translate "Élèves, tuteurs et inscriptions" %}</li>
+        <li>{% translate "Paiements et reçus bilingues" %}</li>
+        <li>{% translate "Paie conforme à la réglementation marocaine" %}</li>
+      </ul>
+    </div>
+
+    <div class="m-login-foot">{% translate "Espace réservé au personnel de l'établissement." %}</div>
+  </aside>
+
+  <main class="m-login-panel">
+    <div class="m-login-inner">
+      <h1 class="m-login-title">{% translate "Connexion" %}</h1>
+      <p class="m-login-hint">{% translate "Identifiez-vous pour accéder à la gestion de l'école." %}</p>
+
+      {% if form.errors and not form.non_field_errors %}
+        <p class="m-alert">{% translate "Veuillez corriger les erreurs ci-dessous." %}</p>
+      {% endif %}
+      {% for error in form.non_field_errors %}
+        <p class="m-alert">{{ error }}</p>
+      {% endfor %}
+      {% if user.is_authenticated %}
+        <p class="m-alert">
+          {% blocktranslate trimmed %}
+            Vous êtes connecté en tant que {{ username }}, mais n'avez pas accès à cette page.
+          {% endblocktranslate %}
+        </p>
+      {% endif %}
+
+      <form action="{{ app_path }}" method="post" id="login-form" class="m-form">{% csrf_token %}
+        <div class="m-field">
+          <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+          {{ form.username.errors }}
+          {{ form.username }}
+        </div>
+        <div class="m-field">
+          <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+          {{ form.password.errors }}
+          {{ form.password }}
+          <input type="hidden" name="next" value="{{ next }}">
+        </div>
+
+        {% url 'admin_password_reset' as password_reset_url %}
+        {% if password_reset_url %}
+          <a class="m-login-reset" href="{{ password_reset_url }}">{% translate "Mot de passe oublié ?" %}</a>
+        {% endif %}
+
+        <button type="submit" class="m-login-submit">{% translate "Se connecter" %}</button>
+      </form>
+
+      <p class="m-login-note">
+        {% translate "Accès protégé. Les connexions sont enregistrées conformément au règlement intérieur de l'établissement." %}
+      </p>
+    </div>
+  </main>
+</div>
+{% endblock %}

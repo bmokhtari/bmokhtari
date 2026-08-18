@@ -12,7 +12,8 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from core.models import AcademicYear, Level, SchoolClass, Subject
-from finance.models import Payment, TuitionPlan
+from finance.models import (SCHOOL_MONTHS, Payment, TuitionPlan,
+                            expected_monthly_amount)
 from hr.models import Employee, PayrollRun
 from students.models import Enrollment, Guardian, Student
 
@@ -110,78 +111,133 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Données de démonstration créées."))
 
     def _create_demo(self, year):
-        teacher, _ = Employee.objects.get_or_create(
-            matricule="EMP001",
-            defaults=dict(
-                first_name="Fatima", last_name="El Amrani",
-                first_name_ar="فاطمة", last_name_ar="العمراني",
-                cin="BK456789", cnss_number="112233445",
-                role=Employee.Role.TEACHER, phone="0661234567",
-                hire_date=datetime.date(year.start_date.year, 9, 1),
-                base_salary=Decimal("7500"), allowances=Decimal("500"),
-                dependents=2,
-            ),
-        )
-        Employee.objects.get_or_create(
-            matricule="EMP002",
-            defaults=dict(
-                first_name="Youssef", last_name="Benali",
-                first_name_ar="يوسف", last_name_ar="بنعلي",
-                cin="AB123456", cnss_number="998877665",
-                role=Employee.Role.ADMIN, phone="0662345678",
-                hire_date=datetime.date(year.start_date.year, 9, 1),
-                base_salary=Decimal("5000"), allowances=Decimal("0"),
-                dependents=0,
-            ),
-        )
+        """Jeu de démonstration : personnel, classes, élèves et paiements."""
+        start_year = year.start_date.year
 
-        level_2ap = Level.objects.get(code="2AP")
-        school_class, _ = SchoolClass.objects.get_or_create(
-            academic_year=year, level=level_2ap, name="A",
-            defaults={"capacity": 30, "main_teacher": teacher},
-        )
-        plan = TuitionPlan.objects.get(academic_year=year, level=level_2ap)
+        staff = [
+            ("EMP001", "Fatima", "El Amrani", "فاطمة", "العمراني", "BK456789",
+             Employee.Role.TEACHER, "0661234567", "7500", "500", 2),
+            ("EMP002", "Youssef", "Benali", "يوسف", "بنعلي", "AB123456",
+             Employee.Role.ADMIN, "0662345678", "5000", "0", 0),
+            ("EMP003", "Khadija", "Ouazzani", "خديجة", "الوزاني", "BE778120",
+             Employee.Role.TEACHER, "0663456781", "8200", "600", 3),
+            ("EMP004", "Rachid", "Tazi", "رشيد", "التازي", "C321987",
+             Employee.Role.TEACHER, "0664567812", "6900", "0", 1),
+            ("EMP005", "Nadia", "Chraibi", "نادية", "الشرايبي", "BJ556677",
+             Employee.Role.DIRECTION, "0665678123", "14000", "2000", 2),
+            ("EMP006", "Hassan", "Bouzid", "حسن", "بوزيد", "D889001",
+             Employee.Role.SUPPORT, "0666781234", "3600", "0", 4),
+        ]
+        employees = {}
+        for (matricule, first, last, first_ar, last_ar, cin, role, phone,
+             salary, bonus, dependents) in staff:
+            employee, _ = Employee.objects.get_or_create(
+                matricule=matricule,
+                defaults=dict(
+                    first_name=first, last_name=last,
+                    first_name_ar=first_ar, last_name_ar=last_ar,
+                    cin=cin, cnss_number=f"1122{matricule[-3:]}00",
+                    role=role, phone=phone,
+                    hire_date=datetime.date(start_year, 9, 1),
+                    base_salary=Decimal(salary), allowances=Decimal(bonus),
+                    dependents=dependents,
+                ),
+            )
+            employees[matricule] = employee
 
-        guardian, _ = Guardian.objects.get_or_create(
-            cin="C654321",
-            defaults=dict(
-                first_name="Mohammed", last_name="Alaoui",
-                relationship=Guardian.Relationship.FATHER,
-                phone="0663456789", profession="Commerçant",
-                address="12 rue Hassan II, Casablanca",
-            ),
-        )
-        student, created = Student.objects.get_or_create(
-            massar_code="G123456789",
-            defaults=dict(
-                first_name="Amina", last_name="Alaoui",
-                first_name_ar="أمينة", last_name_ar="العلوي",
-                gender=Student.Gender.FEMALE,
-                birth_date=datetime.date(year.start_date.year - 7, 3, 15),
-                birth_place="Casablanca", city="Casablanca",
-                address="12 rue Hassan II, Casablanca",
-            ),
-        )
-        if created:
-            student.guardians.add(guardian)
+        classes = {}
+        for code, name, teacher in [("2AP", "A", "EMP001"),
+                                    ("2AP", "B", "EMP004"),
+                                    ("5AP", "A", "EMP003")]:
+            level = Level.objects.get(code=code)
+            school_class, _ = SchoolClass.objects.get_or_create(
+                academic_year=year, level=level, name=name,
+                defaults={"capacity": 30, "main_teacher": employees[teacher]},
+            )
+            classes[f"{code}-{name}"] = school_class
 
-        enrollment, _ = Enrollment.objects.get_or_create(
-            student=student, school_class=school_class,
-            defaults={"tuition_plan": plan},
-        )
-        if not enrollment.payments.exists():
+        # (prénom, nom, prénom ar, nom ar, sexe, classe, mensualités réglées)
+        pupils = [
+            ("Amina", "Alaoui", "أمينة", "العلوي", "F", "2AP-A", 6),
+            ("Zakaria", "Berrada", "زكرياء", "برادة", "M", "2AP-A", 6),
+            ("Salma", "Bennani", "سلمى", "بناني", "F", "2AP-A", 4),
+            ("Ilyas", "Cherkaoui", "إلياس", "الشرقاوي", "M", "2AP-B", 6),
+            ("Hiba", "Fassi", "هبة", "الفاسي", "F", "2AP-B", 5),
+            ("Omar", "Idrissi", "عمر", "الإدريسي", "M", "2AP-B", 6),
+            ("Lina", "Sabri", "لينا", "الصبري", "F", "5AP-A", 6),
+            ("Adam", "Naciri", "آدم", "الناصري", "M", "5AP-A", 3),
+            ("Sofia", "Lahlou", "صوفيا", "لحلو", "F", "5AP-A", 6),
+            ("Mehdi", "Kettani", "مهدي", "الكتاني", "M", "5AP-A", 6),
+        ]
+
+        months = [m for m, _label in SCHOOL_MONTHS][:10]
+
+        for index, (first, last, first_ar, last_ar, gender, class_key,
+                    paid_months) in enumerate(pupils):
+            guardian, _ = Guardian.objects.get_or_create(
+                cin=f"C{600000 + index}",
+                defaults=dict(
+                    first_name="Mohammed" if index % 2 else "Latifa",
+                    last_name=last,
+                    relationship=(Guardian.Relationship.FATHER if index % 2
+                                  else Guardian.Relationship.MOTHER),
+                    phone=f"066{3000000 + index * 111}",
+                    profession="Commerçant" if index % 2 else "Enseignante",
+                    address=f"{10 + index} rue Hassan II, Casablanca",
+                ),
+            )
+            student, created = Student.objects.get_or_create(
+                massar_code=f"G{123456780 + index}",
+                defaults=dict(
+                    first_name=first, last_name=last,
+                    first_name_ar=first_ar, last_name_ar=last_ar,
+                    gender=gender,
+                    birth_date=datetime.date(start_year - 7 - index % 4,
+                                             1 + index % 12, 5 + index),
+                    birth_place="Casablanca", city="Casablanca",
+                    address=f"{10 + index} rue Hassan II, Casablanca",
+                ),
+            )
+            if created:
+                student.guardians.add(guardian)
+
+            school_class = classes[class_key]
+            plan = TuitionPlan.objects.get(academic_year=year,
+                                           level=school_class.level)
+            enrollment, _ = Enrollment.objects.get_or_create(
+                student=student, school_class=school_class,
+                defaults={"tuition_plan": plan,
+                          # fratrie : une remise sur un élève sur cinq
+                          "discount_pct": Decimal("10") if index % 5 == 0
+                          else Decimal("0")},
+            )
+
+            if enrollment.payments.exists():
+                continue
+
             Payment.objects.create(
                 enrollment=enrollment, kind=Payment.Kind.REGISTRATION,
-                amount=plan.registration_fee,
-                date=datetime.date(year.start_date.year, 9, 1),
+                amount=plan.registration_fee + plan.insurance_fee,
+                method=Payment.Method.TRANSFER,
+                date=datetime.date(start_year, 9, 1),
             )
-            Payment.objects.create(
-                enrollment=enrollment, kind=Payment.Kind.TUITION, month=9,
-                amount=plan.monthly_fee,
-                date=datetime.date(year.start_date.year, 9, 1),
-            )
+            monthly = expected_monthly_amount(enrollment)
+            for position, month in enumerate(months[:paid_months]):
+                pay_year = start_year if month >= 9 else start_year + 1
+                Payment.objects.create(
+                    enrollment=enrollment, kind=Payment.Kind.TUITION,
+                    month=month, amount=monthly,
+                    method=(Payment.Method.CASH if position % 2
+                            else Payment.Method.CHEQUE),
+                    reference="" if position % 2 else f"44701{index}{position}",
+                    date=datetime.date(pay_year, month, 3 + position % 5),
+                )
 
-        run, created = PayrollRun.objects.get_or_create(
-            year=year.start_date.year, month=9)
-        if created:
-            run.generate_payslips()
+        for month in (9, 10, 11, 12):
+            run, created = PayrollRun.objects.get_or_create(
+                year=start_year, month=month)
+            if created:
+                run.generate_payslips()
+                run.status = (PayrollRun.Status.PAID if month < 12
+                              else PayrollRun.Status.DRAFT)
+                run.save()

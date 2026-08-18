@@ -65,6 +65,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
+                "core.context_processors.school",
             ],
         },
     },
@@ -117,6 +118,29 @@ USE_THOUSAND_SEPARATOR = True
 # Monnaie utilisée dans toute l'application
 CURRENCY_CODE = "MAD"
 CURRENCY_SYMBOL = "DH"
+
+# En-tête des documents officiels (reçus, bulletins de paie).
+# À personnaliser pour chaque établissement, ou via variables d'environnement.
+SCHOOL = {
+    "name": os.environ.get("SCHOOL_NAME", "Madrasati"),
+    "name_ar": os.environ.get("SCHOOL_NAME_AR", "مدرستي"),
+    "kind": os.environ.get("SCHOOL_KIND", "Établissement d'enseignement privé"),
+    "kind_ar": os.environ.get("SCHOOL_KIND_AR", "مؤسسة للتعليم الخصوصي"),
+    "address": os.environ.get("SCHOOL_ADDRESS", "Casablanca, Maroc"),
+    "address_ar": os.environ.get("SCHOOL_ADDRESS_AR", "الدار البيضاء، المغرب"),
+}
+
+# Durcissement appliqué dès que DEBUG est désactivé (mise en production).
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    # Render, Railway et consorts terminent TLS en amont.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    X_FRAME_OPTIONS = "DENY"
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]

@@ -48,6 +48,18 @@ French/Arabic interface with RTL support.
 - Les taux sont centralisés dans [`hr/payroll.py`](hr/payroll.py) pour suivre
   les futures lois de finances.
 
+### 🎨 Interface
+- Thème « Madrasati » appliqué à toute l'interface de gestion : vert émeraude
+  et ivoire, motif zellige discret, titres en serif, tableaux et cartes
+  arrondis — en remplacement de l'habillage par défaut de Django.
+- **Page de connexion** dédiée et **tableau de bord** : effectifs, encaissements
+  du mois, graphique des recettes de septembre à juin, mensualités en retard et
+  derniers paiements.
+- **Documents imprimables** (reçu, bulletin de paie) sur papier à en-tête
+  bilingue, avec montant en toutes lettres et emplacements de signature.
+  L'en-tête se configure sans toucher au code, via les variables
+  `SCHOOL_NAME`, `SCHOOL_NAME_AR`, `SCHOOL_KIND`, `SCHOOL_ADDRESS`…
+
 ### 🌍 Localisation
 - Interface **français** (par défaut) et **arabe** avec affichage RTL
   automatique.

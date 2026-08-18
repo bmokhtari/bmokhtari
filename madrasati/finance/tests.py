@@ -63,3 +63,34 @@ class FinanceTests(TestCase):
             self.student.age,
             datetime.date.today().year - 2019
             - ((datetime.date.today().month, datetime.date.today().day) < (3, 15)))
+
+
+class AmountInWordsTests(TestCase):
+    """Montants en toutes lettres — règles d'accord du français."""
+
+    def test_simple_amounts(self):
+        from .amount_words import amount_in_words
+        self.assertEqual(amount_in_words(Decimal("1")), "un dirham")
+        self.assertEqual(amount_in_words(Decimal("810")), "huit cent dix dirhams")
+        self.assertEqual(amount_in_words(Decimal("1000")), "mille dirhams")
+
+    def test_french_agreement_rules(self):
+        from .amount_words import amount_in_words
+        # « quatre-vingts » prend un -s isolé, pas devant mille
+        self.assertEqual(amount_in_words(Decimal("80")), "quatre-vingts dirhams")
+        self.assertEqual(amount_in_words(Decimal("180350")),
+                         "cent quatre-vingt mille trois cent cinquante dirhams")
+        # « cent » invariable devant mille
+        self.assertEqual(amount_in_words(Decimal("200000")), "deux cent mille dirhams")
+        self.assertEqual(amount_in_words(Decimal("200")), "deux cents dirhams")
+        # « et un », « et onze »
+        self.assertEqual(amount_in_words(Decimal("21")), "vingt et un dirhams")
+        self.assertEqual(amount_in_words(Decimal("71")), "soixante et onze dirhams")
+        # million est un nom : « de dirhams »
+        self.assertEqual(amount_in_words(Decimal("1000000")), "un million de dirhams")
+
+    def test_centimes(self):
+        from .amount_words import amount_in_words
+        self.assertEqual(amount_in_words(Decimal("1150.50")),
+                         "mille cent cinquante dirhams et cinquante centimes")
+        self.assertEqual(amount_in_words(Decimal("0.01")), "zéro dirham et un centime")
