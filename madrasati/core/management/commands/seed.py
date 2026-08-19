@@ -11,12 +11,14 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from core.models import AcademicYear, Level, SchoolClass, Subject
-from finance.models import (SCHOOL_MONTHS, DiscountRequest, Payment,
-                            TuitionPlan, expected_monthly_amount)
+from core.models import AcademicYear, Level, School, SchoolClass, Subject
+from finance.models import (SCHOOL_MONTHS, DiscountRequest, FeeLine,
+                            Payment, TuitionPlan,
+                            expected_monthly_amount)
+from finance.schedule import balance_due
 from hr.models import Employee, PayrollRun
-from students.models import (BehaviourRecord, Enrollment, Guardian,
-                             Student)
+from students.models import (BehaviourRecord, BehaviourType, Enrollment,
+                             Guardian, Student)
 
 LEVELS = [
     # (cycle, code, nom_fr, nom_ar)
@@ -35,6 +37,19 @@ LEVELS = [
     ("high", "TC", "Tronc commun", "الجذع المشترك"),
     ("high", "1BAC", "1re année baccalauréat", "الأولى باكالوريا"),
     ("high", "2BAC", "2e année baccalauréat", "الثانية باكالوريا"),
+    # Formation professionnelle et supérieure (ESTEP)
+    ("vocational", "TS1", "Technicien spécialisé — 1re année", "تقني متخصص — السنة الأولى"),
+    ("vocational", "TS2", "Technicien spécialisé — 2e année", "تقني متخصص — السنة الثانية"),
+    ("higher", "LP1", "Licence professionnelle", "الإجازة المهنية"),
+]
+
+# Établissements du groupe : trois écoles d'enseignement général,
+# un établissement de formation professionnelle et supérieure.
+SCHOOLS = [
+    ("Tahadi (Challenge)", "التحدي", School.Programme.GENERAL),
+    ("Thomas Jefferson", "توماس جيفرسون", School.Programme.GENERAL),
+    ("William Thompson", "وليام طومسون", School.Programme.GENERAL),
+    ("ESTEP", "المدرسة العليا للتكنولوجيا", School.Programme.VOCATIONAL),
 ]
 
 SUBJECTS = [
@@ -51,6 +66,39 @@ SUBJECTS = [
 ]
 
 
+def _general_lines(plan, registration):
+    """Frais de rentrée de l'enseignement général."""
+    FeeLine.objects.bulk_create([
+        FeeLine(plan=plan, kind=FeeLine.Kind.REGISTRATION,
+                amount=registration, mandatory=True),
+        FeeLine(plan=plan, kind=FeeLine.Kind.BOOKS_A,
+                label="Manuels — liste A (à acheter à l'école)",
+                amount=Decimal("600"), mandatory=True),
+        FeeLine(plan=plan, kind=FeeLine.Kind.BOOKS_D,
+                label="Manuels — liste D (achat libre)",
+                amount=Decimal("350"), mandatory=False),
+        FeeLine(plan=plan, kind=FeeLine.Kind.SUPPLIES,
+                amount=Decimal("200"), mandatory=True),
+        FeeLine(plan=plan, kind=FeeLine.Kind.PHOTOCOPY,
+                amount=Decimal("300"), mandatory=True),
+    ])
+
+
+def _vocational_lines(plan):
+    """Frais annexes de la formation professionnelle.
+
+    Le montant annuel couvre l'inscription et la scolarité ; le diplôme se
+    règle à part, au sixième mois de l'année scolaire (février).
+    """
+    FeeLine.objects.bulk_create([
+        FeeLine(plan=plan, kind=FeeLine.Kind.BOOKS_A,
+                label="Supports de cours (liste A)",
+                amount=Decimal("800"), mandatory=True),
+        FeeLine(plan=plan, kind=FeeLine.Kind.DIPLOMA,
+                amount=Decimal("1500"), mandatory=True, due_month=2),
+    ])
+
+
 class Command(BaseCommand):
     help = "Initialise les données de base (niveaux marocains, année scolaire, matières)."
 
@@ -58,11 +106,17 @@ class Command(BaseCommand):
         parser.add_argument("--demo", action="store_true",
                             help="Ajoute aussi des données de démonstration "
                                  "(élèves, employés, paiements).")
+        parser.add_argument("--year", type=int, default=None, metavar="AAAA",
+                            help="Année de rentrée à créer (ex. 2025 pour "
+                                 "l'année scolaire 2025-2026). Par défaut, "
+                                 "celle du calendrier.")
 
     def handle(self, *args, **options):
         today = timezone.localdate()
         # Année scolaire marocaine : septembre → juillet.
-        start_year = today.year if today.month >= 8 else today.year - 1
+        start_year = options.get("year")
+        if start_year is None:
+            start_year = today.year if today.month >= 8 else today.year - 1
         year, _ = AcademicYear.objects.get_or_create(
             name=f"{start_year}-{start_year + 1}",
             defaults={
@@ -71,6 +125,9 @@ class Command(BaseCommand):
                 "is_current": True,
             },
         )
+        if not year.is_current:
+            year.is_current = True
+            year.save(update_fields=["is_current"])
 
         for order, (cycle, code, name_fr, name_ar) in enumerate(LEVELS):
             Level.objects.get_or_create(
@@ -85,24 +142,55 @@ class Command(BaseCommand):
                 defaults={"name_ar": name_ar, "coefficient": coef},
             )
 
-        # Formules de frais indicatives par cycle (en DH)
+        schools = {}
+        for name, name_ar, programme in SCHOOLS:
+            school, _created = School.objects.get_or_create(
+                name=name,
+                defaults={"name_ar": name_ar, "programme": programme},
+            )
+            schools[name] = school
+
+        # --- Enseignement général : mensualité + frais de rentrée ----------
         fees_by_cycle = {
             "preschool": ("800", "700"),
             "primary": ("1000", "900"),
             "middle": ("1200", "1100"),
             "high": ("1500", "1300"),
         }
-        for level in Level.objects.all():
-            registration, monthly = fees_by_cycle[level.cycle]
-            TuitionPlan.objects.get_or_create(
-                academic_year=year, level=level,
+        general_levels = Level.objects.filter(
+            cycle__in=["preschool", "primary", "middle", "high"])
+        for school in [s for s in schools.values()
+                       if s.programme == School.Programme.GENERAL]:
+            for level in general_levels:
+                registration, monthly = fees_by_cycle[level.cycle]
+                plan, created = TuitionPlan.objects.get_or_create(
+                    academic_year=year, level=level, school=school,
+                    defaults={
+                        "billing": TuitionPlan.Billing.MONTHLY,
+                        "registration_fee": Decimal(0),
+                        "monthly_fee": Decimal(monthly),
+                        "insurance_fee": Decimal("150"),
+                        "months_count": 10,
+                    },
+                )
+                if created:
+                    _general_lines(plan, Decimal(registration))
+
+        # --- Formation professionnelle : montant annuel + diplôme ----------
+        estep = schools["ESTEP"]
+        annual_by_code = {"TS1": "24000", "TS2": "26000", "LP1": "32000"}
+        for level in Level.objects.filter(cycle__in=["vocational", "higher"]):
+            plan, created = TuitionPlan.objects.get_or_create(
+                academic_year=year, level=level, school=estep,
                 defaults={
-                    "registration_fee": Decimal(registration),
-                    "monthly_fee": Decimal(monthly),
-                    "insurance_fee": Decimal("150"),
+                    "billing": TuitionPlan.Billing.ANNUAL,
+                    "annual_fee": Decimal(annual_by_code[level.code]),
+                    "monthly_fee": Decimal(0),
                     "months_count": 10,
                 },
             )
+            if created:
+                _vocational_lines(plan)
 
         self.stdout.write(self.style.SUCCESS(
             f"Données de base créées (année {year})."))
@@ -153,19 +241,20 @@ class Command(BaseCommand):
             level = Level.objects.get(code=code)
             school_class, _ = SchoolClass.objects.get_or_create(
                 academic_year=year, level=level, name=name,
-                defaults={"capacity": 30, "main_teacher": employees[teacher]},
+                defaults={"capacity": 30, "main_teacher": employees[teacher],
+                          "school": School.objects.get(name="Tahadi (Challenge)")},
             )
             classes[f"{code}-{name}"] = school_class
 
         # (prénom, nom, prénom ar, nom ar, sexe, classe, mensualités réglées)
         pupils = [
-            ("Amina", "Alaoui", "أمينة", "العلوي", "F", "2AP-A", 6),
+            ("Amina", "Alaoui", "أمينة", "العلوي", "F", "2AP-A", 10),
             ("Zakaria", "Berrada", "زكرياء", "برادة", "M", "2AP-A", 6),
             ("Salma", "Bennani", "سلمى", "بناني", "F", "2AP-A", 4),
             ("Ilyas", "Cherkaoui", "إلياس", "الشرقاوي", "M", "2AP-B", 6),
             ("Hiba", "Fassi", "هبة", "الفاسي", "F", "2AP-B", 5),
             ("Omar", "Idrissi", "عمر", "الإدريسي", "M", "2AP-B", 6),
-            ("Lina", "Sabri", "لينا", "الصبري", "F", "5AP-A", 6),
+            ("Lina", "Sabri", "لينا", "الصبري", "F", "5AP-A", 10),
             ("Adam", "Naciri", "آدم", "الناصري", "M", "5AP-A", 3),
             ("Sofia", "Lahlou", "صوفيا", "لحلو", "F", "5AP-A", 6),
             ("Mehdi", "Kettani", "مهدي", "الكتاني", "M", "5AP-A", 6),
@@ -204,7 +293,8 @@ class Command(BaseCommand):
 
             school_class = classes[class_key]
             plan = TuitionPlan.objects.get(academic_year=year,
-                                           level=school_class.level)
+                                           level=school_class.level,
+                                           school=school_class.school)
             enrollment, _ = Enrollment.objects.get_or_create(
                 student=student, school_class=school_class,
                 defaults={"tuition_plan": plan,
@@ -234,6 +324,18 @@ class Command(BaseCommand):
                     date=datetime.date(pay_year, month, 3 + position % 5),
                 )
 
+            if paid_months >= len(months):
+                # Deux familles à jour : elles ont soldé les frais annexes à
+                # la rentrée, leurs documents restent donc imprimables.
+                outstanding = balance_due(enrollment)
+                if outstanding:
+                    Payment.objects.create(
+                        enrollment=enrollment, kind=Payment.Kind.OTHER,
+                        amount=outstanding, method=Payment.Method.TRANSFER,
+                        reference=f"44900{index}",
+                        date=datetime.date(start_year, 9, 8),
+                    )
+
         # Deux demandes de remise : une en attente, une déjà approuvée,
         # pour illustrer le circuit d'approbation.
         first, second = Enrollment.objects.order_by("pk")[:2]
@@ -250,22 +352,65 @@ class Command(BaseCommand):
             approved.decide(DiscountRequest.Status.APPROVED, None,
                             note="Justificatif médical fourni.")
 
+        # --- ESTEP : deux étudiants, échéanciers différents ----------------
+        estep = School.objects.get(name="ESTEP")
+        ts1 = Level.objects.get(code="TS1")
+        estep_class, _ = SchoolClass.objects.get_or_create(
+            academic_year=year, level=ts1, name="Gestion",
+            defaults={"school": estep, "capacity": 25})
+        estep_plan = TuitionPlan.objects.get(academic_year=year, level=ts1,
+                                             school=estep)
+        students_estep = [
+            ("Ayoub", "Bennis", "أيوب", "بنيس", "M",
+             Enrollment.PaymentPlan.THREE),
+            ("Meryem", "Haddadi", "مريم", "الحدادي", "F",
+             Enrollment.PaymentPlan.UPFRONT),
+        ]
+        for index, (first, last, first_ar, last_ar, gender, plan_choice) in \
+                enumerate(students_estep):
+            student, created = Student.objects.get_or_create(
+                massar_code=f"E{20260000 + index}",
+                defaults=dict(
+                    first_name=first, last_name=last,
+                    first_name_ar=first_ar, last_name_ar=last_ar,
+                    gender=gender,
+                    birth_date=datetime.date(start_year - 19, 4 + index, 12),
+                    birth_place="Casablanca", city="Casablanca",
+                ),
+            )
+            enrollment, made = Enrollment.objects.get_or_create(
+                student=student, school_class=estep_class,
+                defaults={"tuition_plan": estep_plan,
+                          "payment_plan": plan_choice},
+            )
+            if made and plan_choice == Enrollment.PaymentPlan.UPFRONT:
+                # Réglé comptant à la rentrée, remise de 10 % appliquée.
+                from finance.schedule import fee_schedule
+
+                first_entry = fee_schedule(enrollment)[0]
+                Payment.objects.create(
+                    enrollment=enrollment, kind=Payment.Kind.TUITION,
+                    month=9, amount=first_entry["amount"],
+                    method=Payment.Method.TRANSFER,
+                    date=datetime.date(start_year, 9, 2),
+                    note="Règlement comptant de l'année (remise 10 %).")
+
         # Vie scolaire : un fait positif, deux faits négatifs.
         if not BehaviourRecord.objects.exists():
             facts = [
-                (0, BehaviourRecord.Kind.COMMENDATION,
+                (0, "Entraide entre élèves",
                  "Aide apportée à un camarade en difficulté", True),
-                (2, BehaviourRecord.Kind.WARNING,
-                 "Bavardages répétés en classe", True),
-                (7, BehaviourRecord.Kind.REMARK,
+                (2, "Bavardage répété", "Bavardages répétés en classe", True),
+                (7, "Matériel oublié",
                  "Matériel oublié à plusieurs reprises", False),
             ]
             enrollments = list(Enrollment.objects.order_by("pk"))
-            for index, (position, kind, summary, informed) in enumerate(facts):
+            for index, (position, type_name, summary, informed) in enumerate(facts):
                 BehaviourRecord.objects.create(
                     enrollment=enrollments[position],
                     date=datetime.date(start_year, 10 + index % 3, 6 + index),
-                    kind=kind, summary=summary,
+                    type=BehaviourType.objects.get(name=type_name),
+                    summary=summary,
                     guardians_informed=informed,
                     reported_by=employees["EMP001"],
                     follow_up="Entretien avec les tuteurs." if informed else "")

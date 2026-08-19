@@ -3,18 +3,59 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _, ngettext
 
-from .models import DiscountRequest, Payment, TuitionPlan
+from .models import DiscountRequest, FeeLine, Payment, TuitionPlan
 
 APPROVE_PERM = "finance.approve_discountrequest"
 
 
+class FeeLineInline(admin.TabularInline):
+    model = FeeLine
+    extra = 0
+    fields = ["kind", "label", "amount", "mandatory", "due_month"]
+
+
 @admin.register(TuitionPlan)
 class TuitionPlanAdmin(admin.ModelAdmin):
-    list_display = ["level", "academic_year", "registration_fee",
-                    "monthly_fee", "insurance_fee", "months_count",
-                    "annual_total"]
-    list_filter = ["academic_year", "level__cycle"]
-    search_fields = ["level__code", "level__name_fr"]
+    list_display = ["level", "school", "academic_year", "billing",
+                    "tuition_display", "extras_display", "annual_total"]
+    list_filter = ["school", "billing", "academic_year", "level__cycle"]
+    search_fields = ["level__code", "level__name_fr", "school__name"]
+    inlines = [FeeLineInline]
+    change_form_template = "admin/finance/tuitionplan/change_form.html"
+    fieldsets = [
+        (_("Formule"), {"fields": ["school", "academic_year", "level",
+                                   "billing"]}),
+        (_("Enseignement général — facturation mensuelle"), {
+            "classes": ["m-billing", "m-billing-monthly"],
+            "fields": ["monthly_fee", "months_count", "registration_fee",
+                       "insurance_fee"],
+            "description": _("Mensualité réglée sur les dix mois de l'année "
+                             "scolaire (septembre → juin)."),
+        }),
+        (_("Formation professionnelle — facturation annuelle"), {
+            "classes": ["m-billing", "m-billing-annual"],
+            "fields": ["annual_fee"],
+            "description": _("Montant global de l'année, frais d'inscription "
+                             "compris. Les frais à échéance propre (diplôme…) "
+                             "se saisissent en frais annexes."),
+        }),
+        (_("Remise"), {"fields": ["cash_discount_pct"]}),
+    ]
+
+    @admin.display(description=_("scolarité"))
+    def tuition_display(self, obj):
+        if obj.billing == TuitionPlan.Billing.ANNUAL:
+            return _("%(amount)s DH / an") % {"amount": obj.annual_fee}
+        return _("%(amount)s DH / mois") % {"amount": obj.monthly_fee}
+
+    @admin.display(description=_("frais annexes"))
+    def extras_display(self, obj):
+        lines = list(obj.lines.all())
+        if not lines:
+            return "—"
+        total = sum(line.amount for line in lines if line.mandatory)
+        return _("%(count)d ligne(s) · %(total)s DH") % {
+            "count": len(lines), "total": total}
 
     @admin.display(description=_("total annuel (DH)"))
     def annual_total(self, obj):

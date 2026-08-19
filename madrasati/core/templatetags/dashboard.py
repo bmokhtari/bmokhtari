@@ -9,8 +9,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from core.models import AcademicYear, SchoolClass
-from finance.models import (SCHOOL_MONTHS, DiscountRequest, Payment,
-                            overdue_months, overdue_total)
+from finance.models import SCHOOL_MONTHS, DiscountRequest, Payment
+from finance.schedule import balance_due, overdue_entries
 from hr.models import Employee, PayrollRun
 from students.models import Enrollment, Student
 
@@ -67,18 +67,19 @@ def _late_enrollments(year, today, limit=5):
                    .select_related("student", "tuition_plan",
                                    "school_class__level",
                                    "school_class__academic_year")
-                   .prefetch_related("payments", "discount_requests"))
+                   .prefetch_related("payments", "discount_requests",
+                                     "optional_fees", "tuition_plan__lines"))
 
     late = []
     for enrollment in enrollments:
-        missing = overdue_months(enrollment, today)
+        missing = overdue_entries(enrollment, today)
         if missing:
             late.append({
                 "enrollment": enrollment,
                 "student": enrollment.student,
                 "school_class": enrollment.school_class,
                 "months": len(missing),
-                "amount": overdue_total(enrollment, today),
+                "amount": balance_due(enrollment, today),
             })
 
     late.sort(key=lambda row: (-row["months"], row["student"].last_name))

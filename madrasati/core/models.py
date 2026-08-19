@@ -35,6 +35,43 @@ class AcademicYear(models.Model):
         return cls.objects.filter(is_current=True).first()
 
 
+class School(models.Model):
+    """Établissement du groupe scolaire.
+
+    Le groupe réunit deux familles de programmes qui ne se facturent pas de
+    la même manière : l'enseignement général (Tahadi, Thomas Jefferson,
+    William Thompson…), réglé au mois, et la formation professionnelle ou
+    supérieure (ESTEP…), dont la scolarité se calcule à l'année.
+    """
+
+    class Programme(models.TextChoices):
+        GENERAL = "general", _("Enseignement général")
+        VOCATIONAL = "vocational", _("Formation professionnelle et supérieure")
+
+    name = models.CharField(_("établissement"), max_length=80, unique=True)
+    name_ar = models.CharField(_("établissement (arabe)"), max_length=80, blank=True)
+    programme = models.CharField(_("type de programme"), max_length=12,
+                                 choices=Programme.choices,
+                                 default=Programme.GENERAL)
+    city = models.CharField(_("ville"), max_length=60, blank=True,
+                            default="Casablanca")
+    address = models.CharField(_("adresse"), max_length=160, blank=True)
+    phone = models.CharField(_("téléphone"), max_length=13, blank=True)
+    is_active = models.BooleanField(_("actif"), default=True)
+
+    class Meta:
+        verbose_name = _("établissement")
+        verbose_name_plural = _("établissements")
+        ordering = ["programme", "name"]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def bills_annually(self):
+        return self.programme == self.Programme.VOCATIONAL
+
+
 class Level(models.Model):
     """Niveau du système éducatif marocain (ex. 1AP, 3AC, 2BAC)."""
 
@@ -43,6 +80,8 @@ class Level(models.Model):
         PRIMARY = "primary", _("Primaire")
         MIDDLE = "middle", _("Collège")
         HIGH = "high", _("Lycée")
+        VOCATIONAL = "vocational", _("Formation professionnelle")
+        HIGHER = "higher", _("Enseignement supérieur")
 
     cycle = models.CharField(_("cycle"), max_length=12, choices=Cycle.choices)
     code = models.CharField(_("code"), max_length=10, unique=True,
@@ -63,6 +102,9 @@ class Level(models.Model):
 class SchoolClass(models.Model):
     """Une classe (groupe d'élèves) d'un niveau donné, ex. « 2AP - B »."""
 
+    school = models.ForeignKey(
+        School, on_delete=models.PROTECT, null=True, blank=True,
+        related_name="classes", verbose_name=_("établissement"))
     academic_year = models.ForeignKey(
         AcademicYear, on_delete=models.CASCADE,
         related_name="classes", verbose_name=_("année scolaire"))

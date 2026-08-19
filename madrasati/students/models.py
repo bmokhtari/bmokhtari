@@ -138,6 +138,23 @@ class Enrollment(models.Model):
         _("remise (%)"), max_digits=5, decimal_places=2, default=0,
         help_text=_("Remise accordée (fratrie, bourse…), en pourcentage."))
 
+    class PaymentPlan(models.TextChoices):
+        UPFRONT = "upfront", _("Comptant en début d'année (remise)")
+        THREE = "three", _("3 versements")
+        SIX = "six", _("6 versements")
+        MONTHLY = "monthly", _("Mensuel")
+
+    payment_plan = models.CharField(
+        _("échéancier"), max_length=8, choices=PaymentPlan.choices,
+        default=PaymentPlan.MONTHLY,
+        help_text=_("Le règlement comptant en début d'année ouvre droit à "
+                    "la remise prévue par la formule."))
+    optional_fees = models.ManyToManyField(
+        "finance.FeeLine", blank=True, related_name="enrollments",
+        limit_choices_to={"mandatory": False},
+        verbose_name=_("frais optionnels retenus"),
+        help_text=_("Manuels de la liste D achetés à l'école, options…"))
+
     class Meta:
         verbose_name = _("inscription")
         verbose_name_plural = _("inscriptions")
@@ -201,6 +218,32 @@ class Grade(models.Model):
         return f"{self.enrollment.student} — {self.subject} : {self.score}/20"
 
 
+class BehaviourType(models.Model):
+    """Nature d'un fait de vie scolaire, gérée en base.
+
+    La liste est pré-remplie avec les cas courants, mais reste ouverte :
+    une nature ajoutée par l'équipe depuis l'interface est enregistrée et
+    réutilisable ensuite, sans passer par le code.
+    """
+
+    name = models.CharField(_("nature"), max_length=80, unique=True)
+    name_ar = models.CharField(_("nature (arabe)"), max_length=80, blank=True)
+    is_negative = models.BooleanField(
+        _("fait négatif"), default=True,
+        help_text=_("Décocher pour un fait positif (félicitations, "
+                    "encouragements, entraide…)."))
+    order = models.PositiveSmallIntegerField(_("ordre d'affichage"), default=50)
+    is_active = models.BooleanField(_("proposée à la saisie"), default=True)
+
+    class Meta:
+        verbose_name = _("nature de fait")
+        verbose_name_plural = _("natures de faits")
+        ordering = ["is_negative", "order", "name"]
+
+    def __str__(self):
+        return self.name
+
+
 class BehaviourRecord(models.Model):
     """Fait de vie scolaire : remarque, sanction ou encouragement.
 
@@ -209,23 +252,12 @@ class BehaviourRecord(models.Model):
     l'élève reflète l'ensemble de son comportement.
     """
 
-    class Kind(models.TextChoices):
-        COMMENDATION = "commendation", _("Félicitations")
-        ENCOURAGEMENT = "encouragement", _("Encouragements")
-        REMARK = "remark", _("Remarque")
-        WARNING = "warning", _("Avertissement")
-        DETENTION = "detention", _("Retenue")
-        EXCLUSION = "exclusion", _("Exclusion temporaire")
-
-    # Faits négatifs, pour lesquels l'information des tuteurs est attendue.
-    NEGATIVE_KINDS = ("remark", "warning", "detention", "exclusion")
-
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE,
                                    related_name="behaviour_records",
                                    verbose_name=_("inscription"))
     date = models.DateField(_("date du fait"), default=timezone.localdate)
-    kind = models.CharField(_("nature"), max_length=14, choices=Kind.choices,
-                            default=Kind.REMARK)
+    type = models.ForeignKey(BehaviourType, on_delete=models.PROTECT,
+                             related_name="records", verbose_name=_("nature"))
     summary = models.CharField(_("intitulé"), max_length=120,
                                help_text=_("Ex. : bavardage répété, aide "
                                            "apportée à un camarade."))
@@ -250,8 +282,8 @@ class BehaviourRecord(models.Model):
         ordering = ["-date", "-id"]
 
     def __str__(self):
-        return f"{self.enrollment.student} — {self.get_kind_display()} ({self.date})"
+        return f"{self.enrollment.student} — {self.type} ({self.date})"
 
     @property
     def is_negative(self):
-        return self.kind in self.NEGATIVE_KINDS
+        return self.type.is_negative if self.type_id else True

@@ -175,6 +175,28 @@ div.breadcrumbs a:focus, div.breadcrumbs a:hover { color: var(--m-green-900); }
 
 /* ------------------------------------------------------- Barre latérale */
 
+/* La barre latérale est « sticky » sur 100 vh : sur une page longue la
+   colonne redevenait ivoire sous la barre. On prolonge sa teinte (et son
+   filet) derrière elle pour que la bande verte descende jusqu'en bas. */
+/* 23 px de poignée de repli + 276 px de barre = 299 px de colonne verte. */
+.main:has(> #nav-sidebar) {
+  background: linear-gradient(to right, var(--m-green-900) 0 23px,
+                              transparent 23px);
+}
+.main.shifted:has(> #nav-sidebar) {
+  background: linear-gradient(to right, var(--m-green-900) 0 298px,
+                              var(--m-green-800) 298px 299px,
+                              transparent 299px);
+}
+html[dir="rtl"] .main:has(> #nav-sidebar) {
+  background: linear-gradient(to left, var(--m-green-900) 0 23px,
+                              transparent 23px);
+}
+html[dir="rtl"] .main.shifted:has(> #nav-sidebar) {
+  background: linear-gradient(to left, var(--m-green-900) 0 298px,
+                              var(--m-green-800) 298px 299px,
+                              transparent 299px);
+}
 #nav-sidebar {
   background: var(--m-green-900);
   border-inline-end: 1px solid var(--m-green-800);
@@ -271,9 +293,15 @@ h2, h3 { font-family: var(--m-serif); font-weight: 500; letter-spacing: -.01em; 
 .module caption a.section:hover, .module > h2 a.section:hover { color: var(--m-green-700); }
 /* La première colonne (nom du modèle) doit occuper la place restante,
    sinon les libellés se coupent en plein mot. */
-.dashboard .module table th { width: 100%; overflow-wrap: normal; }
-.dashboard .module table td { white-space: nowrap; }
-.dashboard td, .dashboard th { border-bottom: 1px solid var(--m-hair); padding: 10px 18px; }
+/* Le nom du modèle prend la place restante ; « break-word » hérité de
+   Django coupait « Utilisateurs » en plein milieu. */
+.dashboard .module table th {
+  width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.dashboard .module table td { white-space: nowrap; width: 1%; }
+.dashboard td, .dashboard th { border-bottom: 1px solid var(--m-hair); padding: 10px 14px; }
 .dashboard tr:last-child td, .dashboard tr:last-child th { border-bottom: 0; }
 .module table tbody tr:hover { background: var(--m-surface-2); }
 
@@ -650,8 +678,12 @@ body.m-login-page #footer { display: none; }
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
 }
+/* Le graphe s'étire pour rejoindre la colonne des impayés : sans cela, une
+   longue liste de retards laissait un grand vide sous la courbe. */
+.m-cols > .m-card { display: flex; flex-direction: column; }
+.m-chart { flex: 1 1 auto; display: flex; flex-direction: column; }
 @media (max-width: 1100px) { .m-cols { grid-template-columns: minmax(0, 1fr); } }
 
 .m-card {
@@ -801,7 +833,9 @@ body.m-login-page #footer { display: none; }
   float: none;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  /* 460 px : de quoi loger « Établissements » et ses deux actions sur
+     une seule ligne, sans césure. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
   gap: 16px;
   align-items: start;
 }
@@ -853,7 +887,7 @@ html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left
   letter-spacing: -.015em;
 }
 .m-foot-v .num { font-size: 14px; font-weight: 500; color: var(--m-muted); }
-.m-chart-plot { height: 190px; }
+.m-chart-plot { height: auto; min-height: 190px; flex: 1 1 auto; }
 
 /* Montants : îlot directionnel + chiffres tabulaires. */
 .m-money { unicode-bidi: isolate; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -925,7 +959,7 @@ html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left
   .m-card-note { font-size: 11px; }
 
   .m-chart { padding: 16px 12px 4px; }
-  .m-chart-plot { height: 140px; }
+  .m-chart-plot { height: 140px; min-height: 0; flex: none; }
   .m-bar { border-radius: 3px 3px 0 0; }
   .m-bar-x { font-size: 9.5px; padding-top: 5px; }
   .m-chart-foot { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 14px; }
@@ -991,6 +1025,8 @@ html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left
   /* Les tableaux en ligne (inscriptions, paiements) défilent seuls. */
   .inline-group .tabular, .inline-group .module,
   fieldset .form-row .related-widget-wrapper { overflow-x: auto; }
+  /* Sous 767 px la barre latérale se replie : plus de bande à prolonger. */
+  .main, .main.shifted { background: none !important; }
   .object-tools { margin-top: 0; }
   .object-tools a, .object-tools a:link, .object-tools a:visited { font-size: 12.5px; padding: 8px 12px; }
   /* Conserver la gouttière de l'icône « + », sinon elle chevauche le texte. */
@@ -1397,3 +1433,48 @@ fieldset.module { padding-top: 0; }
   border: 1px solid #E6CFC4;
 }
 .submit-row a.deletelink:hover { background: #F2DCD2; color: #7A2711; }
+
+/* Échéancier affiché sur la fiche d'inscription */
+.m-schedule { width: 100%; max-width: 640px; border-collapse: collapse; }
+.m-schedule th {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+  font-weight: 500;
+  text-align: left;
+  padding: 9px 12px;
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+}
+.m-schedule td {
+  padding: 9px 12px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--m-hair);
+  font-variant-numeric: tabular-nums;
+}
+.m-schedule tfoot td {
+  font-weight: 600;
+  background: var(--m-surface-2);
+  border-bottom: 0;
+}
+
+/* --- Formules : un seul mode de facturation visible à la fois ------------ */
+/* Les feuilles de l'admin posent « display » sur fieldset ; l'attribut
+   hidden doit rester prioritaire pour que le bloc masqué le reste. */
+fieldset.m-billing[hidden] { display: none; }
+
+/* --- Grilles en ligne (frais annexes, paiements…) ------------------------ */
+/* Les champs texte de Django sont dimensionnés en « em » : dans une grille
+   à six colonnes ils débordent de la carte et rognent la colonne
+   « Supprimer ». On les borne, et la grille défile seule en dernier
+   recours plutôt que de couper une colonne. */
+.inline-group .tabular { overflow-x: auto; }
+.inline-group .tabular td .vTextField,
+.inline-group .tabular td input[type=text] {
+  width: 100%;
+  min-width: 7em;
+  max-width: 22em;
+  box-sizing: border-box;
+}
+.inline-group .tabular td select { max-width: 100%; }

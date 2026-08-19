@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from finance.models import overdue_months, overdue_total
+from finance.schedule import balance_due, overdue_entries
 
 from .models import Enrollment
 
@@ -25,13 +25,13 @@ def enrollment_certificate_view(request, enrollment_id):
     )
 
     today = timezone.localdate()
-    unpaid = overdue_months(enrollment, today)
+    unpaid = overdue_entries(enrollment, today)
     if unpaid:
         context = {
             "enrollment": enrollment,
-            "unpaid_months": unpaid,
+            "unpaid_entries": unpaid,
             "unpaid_count": len(unpaid),
-            "amount_due": overdue_total(enrollment, today),
+            "amount_due": balance_due(enrollment, today),
             "document": _("attestation de scolarité"),
         }
         return render(request, "students/document_blocked.html", context,

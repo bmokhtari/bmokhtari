@@ -28,7 +28,7 @@
 
     <div class="blocked-facts">
       <div>
-        <div class="k">{% translate "Mensualités échues non réglées" %}</div>
+        <div class="k">{% translate "Échéances non réglées" %}</div>
         <div class="v num">{{ unpaid_count }}</div>
       </div>
       <div>
@@ -37,10 +37,29 @@
       </div>
     </div>
 
-    <p class="blocked-months">
-      {% translate "Mois concernés" %} :
-      {% for month in unpaid_months %}{% if not forloop.first %}, {% endif %}{{ month|month_name }}{% endfor %}
-    </p>
+    <table class="blocked-table">
+      <thead>
+        <tr>
+          <th scope="col">{% translate "Échéance" %}</th>
+          <th scope="col" class="n">{% translate "Reste dû (DH)" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in unpaid_entries %}
+          <tr>
+            {% with month=entry.month|month_name %}
+              <td>
+                {{ month }}
+                {# Pour une mensualité l'intitulé est le mois lui-même :
+                   inutile de le répéter. #}
+                {% if entry.label != month %}<span class="sub">{{ entry.label }}</span>{% endif %}
+              </td>
+            {% endwith %}
+            <td class="n">{{ entry.remaining|dirhams:2 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
     <div class="blocked-actions">
       <a class="btn" href="{% url 'admin:finance_payment_add' %}?enrollment={{ enrollment.pk }}">
@@ -67,7 +86,17 @@
                         color: var(--muted); }
     .blocked-facts .v { font-size: 23px; font-weight: 600; color: var(--green-900);
                         margin-top: 5px; }
-    .blocked-months { font-size: 13.5px; color: var(--muted); }
+    .blocked-table { width: auto; min-width: 380px; margin: 20px auto 0;
+                     border-collapse: collapse; text-align: left; }
+    .blocked-table th { font-size: 11px; letter-spacing: .09em;
+                        text-transform: uppercase; color: var(--muted);
+                        font-weight: 500; padding: 8px 12px;
+                        border-bottom: 1px solid var(--sand); }
+    .blocked-table td { padding: 8px 12px; font-size: 13.5px;
+                        border-bottom: 1px solid var(--line); }
+    .blocked-table .sub { display: block; font-size: 11.5px;
+                          color: var(--muted); margin-top: 1px; }
+    .blocked-table .n { text-align: right; font-variant-numeric: tabular-nums; }
     .blocked-actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap;
                        justify-content: center; }
     .blocked-actions .btn { display: inline-flex; align-items: center; height: 40px;

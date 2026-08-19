@@ -17,8 +17,32 @@ SCHOOL_MONTHS = [
 
 
 class TuitionPlan(models.Model):
-    """Formule de frais de scolarité d'un niveau (montants en dirhams, MAD)."""
+    """Formule de frais d'un niveau (montants en dirhams, MAD).
 
+    Deux modes de facturation coexistent : l'enseignement général se règle
+    au mois sur les dix mois de l'année scolaire ; la formation
+    professionnelle et le supérieur se calculent en un montant annuel,
+    ensuite étalé selon l'échéancier choisi par la famille.
+    """
+
+    class Billing(models.TextChoices):
+        MONTHLY = "monthly", _("Mensuel (enseignement général)")
+        ANNUAL = "annual", _("Annuel (formation professionnelle et supérieure)")
+
+    school = models.ForeignKey("core.School", on_delete=models.CASCADE,
+                               null=True, blank=True,
+                               related_name="tuition_plans",
+                               verbose_name=_("établissement"))
+    billing = models.CharField(_("mode de facturation"), max_length=8,
+                               choices=Billing.choices, default=Billing.MONTHLY)
+    annual_fee = models.DecimalField(
+        _("scolarité annuelle (DH)"), max_digits=9, decimal_places=2, default=0,
+        help_text=_("Facturation annuelle : montant global de la scolarité, "
+                    "frais d'inscription compris."))
+    cash_discount_pct = models.DecimalField(
+        _("remise paiement comptant (%)"), max_digits=5, decimal_places=2,
+        default=Decimal("10"),
+        help_text=_("Appliquée si la totalité est réglée en début d'année."))
     academic_year = models.ForeignKey("core.AcademicYear", on_delete=models.CASCADE,
                                       related_name="tuition_plans",
                                       verbose_name=_("année scolaire"))
@@ -39,17 +63,86 @@ class TuitionPlan(models.Model):
     class Meta:
         verbose_name = _("formule de frais")
         verbose_name_plural = _("formules de frais")
-        unique_together = [("academic_year", "level")]
+        unique_together = [("academic_year", "level", "school")]
         ordering = ["level__order"]
 
     def __str__(self):
+        if self.billing == self.Billing.ANNUAL:
+            return f"{self.level.code} {self.academic_year} — {self.annual_fee} DH/an"
         return f"{self.level.code} {self.academic_year} — {self.monthly_fee} DH/mois"
 
     @property
+    def tuition_base(self):
+        """Scolarité seule, hors frais annexes."""
+        if self.billing == self.Billing.ANNUAL:
+            return self.annual_fee
+        return self.monthly_fee * self.months_count
+
+    @property
     def annual_total(self):
+        """Total annuel : scolarité, inscription et frais annexes obligatoires."""
+        extras = sum((line.amount for line in self.lines.all()
+                      if line.mandatory), Decimal("0"))
+        if self.billing == self.Billing.ANNUAL:
+            # Le montant annuel inclut déjà l'inscription.
+            return self.annual_fee + extras
         return (self.registration_fee + self.insurance_fee
-                + self.monthly_fee * self.months_count)
+                + self.monthly_fee * self.months_count + extras)
     annual_total.fget.short_description = _("total annuel (DH)")
+
+
+class FeeLine(models.Model):
+    """Frais annexe d'une formule : livres, fournitures, photocopies, diplôme…
+
+    La liste A regroupe les manuels à acheter obligatoirement auprès de
+    l'établissement ; la liste D ceux que la famille peut se procurer
+    ailleurs — ces derniers ne sont facturés que si elle les prend à
+    l'école.
+    """
+
+    class Kind(models.TextChoices):
+        REGISTRATION = "registration", _("Inscription annuelle (FEA)")
+        BOOKS_A = "books_a", _("Manuels — liste A (achat à l'école)")
+        BOOKS_D = "books_d", _("Manuels — liste D (achat libre)")
+        SUPPLIES = "supplies", _("Fournitures (papier, stylos…)")
+        PHOTOCOPY = "photocopy", _("Photocopies et matériel")
+        DIPLOMA = "diploma", _("Frais de diplôme")
+        INSURANCE = "insurance", _("Assurance scolaire")
+        OTHER = "other", _("Autre")
+
+    plan = models.ForeignKey(TuitionPlan, on_delete=models.CASCADE,
+                             related_name="lines", verbose_name=_("formule"))
+    kind = models.CharField(_("nature"), max_length=13, choices=Kind.choices)
+    label = models.CharField(_("intitulé"), max_length=80, blank=True,
+                             help_text=_("Laisser vide pour reprendre "
+                                         "l'intitulé de la nature."))
+    amount = models.DecimalField(_("montant (DH)"), max_digits=8,
+                                 decimal_places=2)
+    mandatory = models.BooleanField(
+        _("obligatoire"), default=True,
+        help_text=_("Décocher pour la liste D : facturée seulement si la "
+                    "famille l'achète à l'école."))
+    due_month = models.PositiveSmallIntegerField(
+        _("exigible au mois de"), choices=SCHOOL_MONTHS, null=True, blank=True,
+        help_text=_("Laisser vide pour inclure ce frais dans l'échéancier. "
+                    "Le diplôme, par exemple, se règle à part au 6e mois."))
+
+    class Meta:
+        verbose_name = _("frais annexe")
+        verbose_name_plural = _("frais annexes")
+        ordering = ["kind", "id"]
+
+    def __str__(self):
+        return f"{self.title} — {self.amount} DH"
+
+    @property
+    def title(self):
+        return self.label or self.get_kind_display()
+
+    @property
+    def is_separate(self):
+        """Frais réglé à son échéance propre, hors échéancier."""
+        return self.due_month is not None
 
 
 class Payment(models.Model):
@@ -279,18 +372,17 @@ def due_months(enrollment, today=None):
 
 
 def overdue_months(enrollment, today=None):
-    """Mois échus mais non réglés, du plus ancien au plus récent."""
-    paid = set(enrollment.payments
-               .filter(kind=Payment.Kind.TUITION, month__isnull=False)
-               .values_list("month", flat=True))
-    return [month for month in due_months(enrollment, today) if month not in paid]
+    """Mois des échéances exigibles non couvertes par les versements."""
+    from .schedule import overdue_entries
+
+    return [entry["month"] for entry in overdue_entries(enrollment, today)]
 
 
 def overdue_total(enrollment, today=None):
-    """Montant restant dû sur les mois échus, remises appliquées."""
-    return sum((expected_monthly_amount(enrollment, month)
-                for month in overdue_months(enrollment, today)),
-               Decimal("0.00"))
+    """Somme restant due sur les échéances déjà exigibles."""
+    from .schedule import balance_due
+
+    return balance_due(enrollment, today)
 
 
 def unpaid_months(enrollment):

@@ -23,14 +23,35 @@ French/Arabic interface with RTL support.
 - Classes par niveau et par année scolaire (septembre → juillet), matières
   bilingues avec coefficients.
 
+### 🏫 Établissements et programmes
+Le groupe réunit deux familles de programmes, qui ne se facturent pas de la
+même façon :
+
+| Programme | Établissements | Facturation |
+|-----------|----------------|-------------|
+| Enseignement général | Tahadi (Challenge), Thomas Jefferson, William Thompson | mensualité sur **10 mois** (septembre → juin) |
+| Formation professionnelle et supérieure | ESTEP | **montant annuel** global, inscription comprise |
+
 ### 💰 Frais de scolarité (MAD)
-- Formules de frais par niveau : frais d'inscription, mensualité, assurance
-  scolaire, nombre de mensualités.
+- **Formule de frais** par établissement, niveau et année, en mode mensuel
+  ou annuel.
+- **Frais annexes** détaillés ligne à ligne : inscription annuelle (FEA),
+  **manuels liste A** (achat obligatoire à l'école), **manuels liste D**
+  (achat libre — facturés seulement si la famille les prend à l'école),
+  fournitures, photocopies et matériel, assurance.
+- **Frais à échéance propre** : les frais de diplôme de l'ESTEP se règlent
+  à part, au 6e mois de l'année scolaire, en dehors de l'étalement.
+- **Échéanciers** : comptant, 3 versements, 6 versements ou mensuel. Le
+  règlement comptant en début d'année ouvre droit à une **remise de 10 %**
+  (paramétrable par formule) — elle ne porte pas sur les frais à échéance
+  propre, qui ne sont pas payés d'avance.
+- L'échéancier complet s'affiche sur la fiche d'inscription : chaque
+  échéance, son montant, et son état (réglée / reste dû).
 - Paiements en dirhams : espèces, chèque, virement, carte — avec **reçus
   numérotés automatiquement** (`REC-2026-00001`) et **reçu imprimable
   bilingue**.
-- Suivi des mois impayés par élève, encaissements du mois sur le tableau
-  de bord.
+- Les retards sont mesurés sur les **échéances exigibles**, les versements
+  étant imputés de la plus ancienne à la plus récente.
 
 ### 🧾 Paie marocaine
 - Employés : matricule, CIN, n° CNSS, RIB, salaire de base + primes,
@@ -74,6 +95,7 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py seed            # niveaux marocains, matières, frais
 # ou : python manage.py seed --demo   (avec élèves/employés d'exemple)
+# --year 2025 pour créer une autre année scolaire que celle du calendrier
 python manage.py createsuperuser
 python manage.py runserver
 ```
