@@ -395,25 +395,51 @@ class Command(BaseCommand):
                     date=datetime.date(start_year, 9, 2),
                     note="Règlement comptant de l'année (remise 10 %).")
 
-        # Vie scolaire : un fait positif, deux faits négatifs.
+        # Vie scolaire : des encouragements comme des remarques, pour que le
+        # dossier montre l'ensemble de la conduite et non les seuls incidents.
+        # (élève, nature, intitulé, détails, matière, suite, tuteurs informés)
         if not BehaviourRecord.objects.exists():
             facts = [
                 (0, "Entraide entre élèves",
-                 "Aide apportée à un camarade en difficulté", True),
-                (2, "Bavardage répété", "Bavardages répétés en classe", True),
-                (7, "Matériel oublié",
-                 "Matériel oublié à plusieurs reprises", False),
+                 "Aide apportée à un camarade en difficulté",
+                 "A spontanément accompagné un camarade arrivé en cours "
+                 "d'année sur les exercices de lecture, pendant trois "
+                 "semaines, sans qu'on le lui demande.",
+                 "Français", "Félicitations transmises aux tuteurs.", True),
+                (2, "Bavardage répété", "Bavardages répétés en classe",
+                 "Troisième rappel à l'ordre de la semaine ; gêne le travail "
+                 "de la rangée.",
+                 "Mathématiques", "Changement de place.", True),
+                (7, "Matériel oublié", "Matériel oublié à plusieurs reprises",
+                 "Cahier d'exercices et règle oubliés quatre fois ce mois-ci.",
+                 "Mathématiques", "", False),
+                (4, "Remarque", "Travail non rendu dans les délais",
+                 "Le devoir de lecture n'a pas été remis à la date convenue. "
+                 "L'élève dit l'avoir oublié à la maison ; un délai jusqu'à "
+                 "vendredi lui a été accordé.",
+                 "Français", "Délai accordé jusqu'à vendredi.", True),
+                (6, "Félicitations", "Progrès constants tout au long du "
+                 "trimestre",
+                 "Moyenne passée de 11 à 15,5 entre le premier et le "
+                 "deuxième contrôle. Travail régulier et participation "
+                 "soutenue.",
+                 "Mathématiques", "Mot de félicitations dans le carnet.",
+                 True),
             ]
             enrollments = list(Enrollment.objects.order_by("pk"))
-            for index, (position, type_name, summary, informed) in enumerate(facts):
+            for index, (position, type_name, summary, details, subject_name,
+                        follow_up, informed) in enumerate(facts):
                 BehaviourRecord.objects.create(
                     enrollment=enrollments[position],
                     date=datetime.date(start_year, 10 + index % 3, 6 + index),
                     type=BehaviourType.objects.get(name=type_name),
                     summary=summary,
+                    details=details,
+                    subject=Subject.objects.filter(
+                        name_fr=subject_name).first(),
                     guardians_informed=informed,
                     reported_by=employees["EMP001"],
-                    follow_up="Entretien avec les tuteurs." if informed else "")
+                    follow_up=follow_up)
 
         for month in (9, 10, 11, 12):
             run, created = PayrollRun.objects.get_or_create(

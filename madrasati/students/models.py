@@ -278,7 +278,9 @@ class BehaviourRecord(models.Model):
 
     class Meta:
         verbose_name = _("fait de comportement")
-        verbose_name_plural = _("comportement")
+        # Le pluriel sert aussi au décompte de la liste : « 5 comportement »
+        # ne se lisait pas.
+        verbose_name_plural = _("faits de comportement")
         ordering = ["-date", "-id"]
 
     def __str__(self):

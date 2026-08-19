@@ -264,11 +264,26 @@ class BehaviourTypeAdmin(admin.ModelAdmin):
     conservée ici et proposée à toutes les saisies suivantes.
     """
 
-    list_display = ["name", "name_ar", "is_negative", "order", "is_active",
+    list_display = ["name", "name_ar", "tone_badge", "order", "is_active",
                     "usage_count"]
     list_filter = ["is_negative", "is_active"]
     search_fields = ["name", "name_ar"]
     list_editable = ["order", "is_active"]
+
+    @admin.display(description=_("registre"), ordering="is_negative")
+    def tone_badge(self, obj):
+        """La coche brute se lisait à l'envers.
+
+        Django rend « fait négatif » coché en vert : « Félicitations »
+        portait donc une croix rouge et « Bavardage » une coche verte. On
+        nomme le registre au lieu de le coder par une case à cocher.
+        """
+        background, colour, label = (
+            ("#F7EAE3", "#9C4426", _("Négatif")) if obj.is_negative
+            else ("#E6F0EA", "#14573D", _("Positif")))
+        return format_html(
+            '<span class="m-status" style="background:{};color:{}">{}</span>',
+            background, colour, label)
 
     @admin.display(description=_("faits enregistrés"))
     def usage_count(self, obj):
