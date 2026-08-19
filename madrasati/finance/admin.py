@@ -16,7 +16,7 @@ class FeeLineInline(admin.TabularInline):
 
 @admin.register(TuitionPlan)
 class TuitionPlanAdmin(admin.ModelAdmin):
-    list_display = ["level", "school", "academic_year", "billing",
+    list_display = ["level", "school", "academic_year", "billing_badge",
                     "tuition_display", "extras_display", "annual_total"]
     list_filter = ["school", "billing", "academic_year", "level__cycle"]
     search_fields = ["level__code", "level__name_fr", "school__name"]
@@ -41,6 +41,17 @@ class TuitionPlanAdmin(admin.ModelAdmin):
         }),
         (_("Remise"), {"fields": ["cash_discount_pct"]}),
     ]
+
+    @admin.display(description=_("facturation"), ordering="billing")
+    def billing_badge(self, obj):
+        """Libellé court : le texte complet du choix étirait la colonne."""
+        annual = obj.billing == TuitionPlan.Billing.ANNUAL
+        background, colour = (("#EFE7D8", "#4A5A52") if annual
+                              else ("#E6F0EA", "#14573D"))
+        label = _("Annuelle") if annual else _("Mensuelle")
+        return format_html(
+            '<span class="m-status" style="background:{};color:{}">{}</span>',
+            background, colour, label)
 
     @admin.display(description=_("scolarité"))
     def tuition_display(self, obj):

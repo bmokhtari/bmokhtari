@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: madrasati\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 01:33+0100\n"
+"POT-Creation-Date: 2026-08-19 02:06+0100\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -63,23 +63,21 @@ msgstr "يجب أن يسبق تاريخ البداية تاريخ النهاية
 msgid "Enseignement général"
 msgstr "التعليم العام"
 
-
 #: core/models.py:49
 msgid "Formation professionnelle et supérieure"
 msgstr "التكوين المهني والتعليم العالي"
 
-
 #: core/models.py:51 core/models.py:63 core/models.py:107 finance/models.py:35
 msgid "établissement"
-msgstr "المؤسسة السابقة"
+msgstr "المؤسسة"
 
 #: core/models.py:52
 msgid "établissement (arabe)"
-msgstr "المؤسسة السابقة"
+msgstr "المؤسسة (بالعربية)"
 
 #: core/models.py:53
 msgid "type de programme"
-msgstr "نوع الأداء"
+msgstr "نوع البرنامج"
 
 #: core/models.py:56 students/models.py:76
 msgid "ville"
@@ -101,7 +99,7 @@ msgstr "نشيط"
 
 #: core/models.py:64
 msgid "établissements"
-msgstr "المؤسسة السابقة"
+msgstr "المؤسسات"
 
 #: core/models.py:79
 msgid "Préscolaire"
@@ -123,11 +121,9 @@ msgstr "الثانوي التأهيلي"
 msgid "Formation professionnelle"
 msgstr "التكوين المهني"
 
-
 #: core/models.py:84
 msgid "Enseignement supérieur"
 msgstr "التعليم العالي"
-
 
 #: core/models.py:86
 msgid "cycle"
@@ -143,11 +139,11 @@ msgstr "مثال : 1AP، 6AP، 3AC، TC، 1BAC، 2BAC"
 
 #: core/models.py:89 core/models.py:138 hr/models.py:28 students/models.py:61
 msgid "nom (français)"
-msgstr "الاسم العائلي (بالفرنسية)"
+msgstr "الاسم (بالفرنسية)"
 
 #: core/models.py:90 core/models.py:139 hr/models.py:30 students/models.py:63
 msgid "nom (arabe)"
-msgstr "الاسم العائلي (بالعربية)"
+msgstr "الاسم (بالعربية)"
 
 #: core/models.py:91
 msgid "ordre"
@@ -177,7 +173,7 @@ msgstr "الطاقة الاستيعابية"
 msgid "professeur principal"
 msgstr "الأستاذ(ة) الرئيسي(ة)"
 
-#: core/models.py:122 finance/admin.py:127 students/admin.py:211
+#: core/models.py:122 finance/admin.py:141 students/admin.py:245
 #: students/models.py:130
 msgid "classe"
 msgstr "القسم"
@@ -238,103 +234,110 @@ msgstr "يونيو"
 msgid "Juil"
 msgstr "يوليوز"
 
-#: finance/admin.py:25
+#: finance/admin.py:26
 msgid "Formule"
 msgstr "الصيغة"
 
-
-#: finance/admin.py:27
+#: finance/admin.py:28
 msgid "Enseignement général — facturation mensuelle"
 msgstr "التعليم العام — فوترة شهرية"
 
-
-#: finance/admin.py:30
+#: finance/admin.py:32
 msgid ""
 "Mensualité réglée sur les dix mois de l'année scolaire (septembre → juin)."
 msgstr "واجب شهري يؤدى على مدى عشرة أشهر من السنة الدراسية (شتنبر → يونيو)."
 
-
-#: finance/admin.py:33
+#: finance/admin.py:35
 msgid "Formation professionnelle — facturation annuelle"
 msgstr "التكوين المهني — فوترة سنوية"
 
-
-#: finance/admin.py:35
+#: finance/admin.py:38
 msgid ""
 "Montant global de l'année, frais d'inscription compris. Les frais à échéance "
 "propre (diplôme…) se saisissent en frais annexes."
-msgstr "المبلغ الإجمالي للسنة، بما فيه رسوم التسجيل. أما المصاريف ذات الاستحقاق الخاص (الدبلوم...) فتسجل ضمن المصاريف الإضافية."
+msgstr ""
+"المبلغ الإجمالي للسنة، بما فيه رسوم التسجيل. أما المصاريف ذات الاستحقاق "
+"الخاص (الدبلوم...) فتسجل ضمن المصاريف الإضافية."
 
-
-#: finance/admin.py:39
+#: finance/admin.py:42
 msgid "Remise"
-msgstr "التخفيض (%)"
+msgstr "التخفيض"
 
-#: finance/admin.py:42 students/admin.py:161
+#: finance/admin.py:45
+msgid "facturation"
+msgstr "الفوترة"
+
+#: finance/admin.py:51
+msgid "Annuelle"
+msgstr "سنوية"
+
+#: finance/admin.py:51
+msgid "Mensuelle"
+msgstr "شهرية"
+
+#: finance/admin.py:56 students/admin.py:195
 msgid "scolarité"
 msgstr "الواجبات الدراسية"
 
-#: finance/admin.py:45
+#: finance/admin.py:59
 #, python-format
 msgid "%(amount)s DH / an"
 msgstr "%(amount)s درهم / السنة"
 
-
-#: finance/admin.py:46
+#: finance/admin.py:60
 #, python-format
 msgid "%(amount)s DH / mois"
 msgstr "%(amount)s درهم / الشهر"
 
-
-#: finance/admin.py:48 finance/models.py:132
+#: finance/admin.py:62 finance/models.py:132
 msgid "frais annexes"
 msgstr "المصاريف الإضافية"
 
-
-#: finance/admin.py:54, python-format
+#: finance/admin.py:68
+#, python-format
 msgid "%(count)d ligne(s) · %(total)s DH"
-msgstr "لم يتم البت في أي طلب (%(count)d)."
+msgstr "%(count)d سطر · %(total)s درهم"
 
-#: finance/admin.py:57 finance/models.py:91
+#: finance/admin.py:71 finance/models.py:91
 msgid "total annuel (DH)"
 msgstr "المجموع السنوي (درهم)"
 
-#: finance/admin.py:75 finance/admin.py:122 students/admin.py:206
+#: finance/admin.py:89 finance/admin.py:136 students/admin.py:240
 #: students/models.py:91 students/models.py:127
 msgid "élève"
 msgstr "التلميذ(ة)"
 
-#: finance/admin.py:79
+#: finance/admin.py:93
 msgid "reçu"
 msgstr "الوصل"
 
-#: finance/admin.py:83 hr/admin.py:54 hr/admin.py:128
+#: finance/admin.py:97 hr/admin.py:54 hr/admin.py:128
 #: templates/print_base.html:150
 msgid "Imprimer"
 msgstr "طباعة"
 
-#: finance/admin.py:111
+#: finance/admin.py:125
 msgid "Demande"
 msgstr "الطلب"
 
-#: finance/admin.py:116
+#: finance/admin.py:130
 msgid "Décision"
 msgstr "القرار"
 
-#: finance/admin.py:132
+#: finance/admin.py:146
 msgid "période"
 msgstr "الفترة"
 
-#: finance/admin.py:136 finance/admin.py:148 finance/models.py:243
+#: finance/admin.py:150 finance/admin.py:162 finance/models.py:243
 #: hr/models.py:82 students/models.py:132
 msgid "statut"
 msgstr "الحالة"
 
-#: finance/admin.py:180
+#: finance/admin.py:194
 msgid "Vous n'avez pas la permission de trancher les demandes de remise."
 msgstr "ليست لديك صلاحية البت في طلبات التخفيض."
 
-#: finance/admin.py:191
+#: finance/admin.py:205
 #, python-format
 msgid "%(count)d demande %(label)s."
 msgid_plural "%(count)d demandes %(label)s."
@@ -345,23 +348,23 @@ msgstr[3] "%(count)d طلبات %(label)s."
 msgstr[4] "%(count)d طلبا %(label)s."
 msgstr[5] "%(count)d طلب %(label)s."
 
-#: finance/admin.py:197
+#: finance/admin.py:211
 msgid "Les demandes déjà tranchées ont été ignorées."
 msgstr "تم تجاهل الطلبات التي سبق البت فيها."
 
-#: finance/admin.py:200
+#: finance/admin.py:214
 msgid "Approuver les demandes sélectionnées"
-msgstr "المصادقة على الدورات المحددة"
+msgstr "المصادقة على الطلبات المحددة"
 
-#: finance/admin.py:203
+#: finance/admin.py:217
 msgid "approuvée(s)"
 msgstr "تمت الموافقة عليها"
 
-#: finance/admin.py:205
+#: finance/admin.py:219
 msgid "Refuser les demandes sélectionnées"
-msgstr "المصادقة على الدورات المحددة"
+msgstr "رفض الطلبات المحددة"
 
-#: finance/admin.py:208
+#: finance/admin.py:222
 msgid "refusée(s)"
 msgstr "تم رفضها"
 
@@ -405,19 +408,17 @@ msgstr "يوليوز"
 msgid "Mensuel (enseignement général)"
 msgstr "شهري (التعليم العام)"
 
-
 #: finance/models.py:30
 msgid "Annuel (formation professionnelle et supérieure)"
 msgstr "سنوي (التكوين المهني والتعليم العالي)"
 
-
 #: finance/models.py:36
 msgid "mode de facturation"
-msgstr "طريقة الأداء"
+msgstr "طريقة الفوترة"
 
 #: finance/models.py:39
 msgid "scolarité annuelle (DH)"
-msgstr "المجموع السنوي (درهم)"
+msgstr "الواجبات السنوية (درهم)"
 
 #: finance/models.py:40
 msgid ""
@@ -425,15 +426,13 @@ msgid ""
 "compris."
 msgstr "الفوترة السنوية : المبلغ الإجمالي للدراسة، بما في ذلك رسوم التسجيل."
 
-
 #: finance/models.py:43
 msgid "remise paiement comptant (%)"
-msgstr "التخفيض (%)"
+msgstr "تخفيض الأداء نقدا (%)"
 
 #: finance/models.py:45
 msgid "Appliquée si la totalité est réglée en début d'année."
 msgstr "يطبق إذا تم أداء المبلغ كاملا في بداية السنة."
-
 
 #: finance/models.py:52
 msgid "frais d'inscription (DH)"
@@ -475,31 +474,25 @@ msgstr "صيغ الواجبات"
 msgid "Inscription annuelle (FEA)"
 msgstr "التسجيل السنوي (FEA)"
 
-
 #: finance/models.py:105
 msgid "Manuels — liste A (achat à l'école)"
 msgstr "الكتب — اللائحة A (تشترى من المدرسة)"
-
 
 #: finance/models.py:106
 msgid "Manuels — liste D (achat libre)"
 msgstr "الكتب — اللائحة D (شراء حر)"
 
-
 #: finance/models.py:107
 msgid "Fournitures (papier, stylos…)"
 msgstr "اللوازم (ورق، أقلام...)"
-
 
 #: finance/models.py:108
 msgid "Photocopies et matériel"
 msgstr "التصوير والمعدات"
 
-
 #: finance/models.py:109
 msgid "Frais de diplôme"
 msgstr "رسوم الدبلوم"
-
 
 #: finance/models.py:110 finance/models.py:154
 msgid "Assurance scolaire"
@@ -513,19 +506,18 @@ msgstr "أخرى"
 msgid "formule"
 msgstr "صيغة الواجبات"
 
-#: finance/models.py:115 students/admin.py:216 students/models.py:229
+#: finance/models.py:115 students/admin.py:250 students/models.py:229
 #: students/models.py:260
 msgid "nature"
 msgstr "الطبيعة"
 
 #: finance/models.py:116 students/models.py:207 students/models.py:261
 msgid "intitulé"
-msgstr "العنوان"
+msgstr "التسمية"
 
 #: finance/models.py:117
 msgid "Laisser vide pour reprendre l'intitulé de la nature."
 msgstr "اتركه فارغا لاستعمال تسمية النوع."
-
 
 #: finance/models.py:119 finance/models.py:173
 msgid "montant (DH)"
@@ -535,13 +527,12 @@ msgstr "المبلغ (درهم)"
 msgid "obligatoire"
 msgstr "إجباري"
 
-
 #: finance/models.py:123
 msgid ""
 "Décocher pour la liste D : facturée seulement si la famille l'achète à "
 "l'école."
-msgstr "ألغ التحديد بالنسبة للائحة D : لا تفوتر إلا إذا اشترتها الأسرة من المدرسة."
-
+msgstr ""
+"ألغ التحديد بالنسبة للائحة D : لا تفوتر إلا إذا اشترتها الأسرة من المدرسة."
 
 #: finance/models.py:126
 msgid "exigible au mois de"
@@ -551,13 +542,13 @@ msgstr "إلى شهر"
 msgid ""
 "Laisser vide pour inclure ce frais dans l'échéancier. Le diplôme, par "
 "exemple, se règle à part au 6e mois."
-msgstr "اتركه فارغا لإدراج هذه المصاريف ضمن جدولة الأداء. رسوم الدبلوم مثلا تؤدى على حدة في الشهر السادس."
-
+msgstr ""
+"اتركه فارغا لإدراج هذه المصاريف ضمن جدولة الأداء. رسوم الدبلوم مثلا تؤدى على "
+"حدة في الشهر السادس."
 
 #: finance/models.py:131
 msgid "frais annexe"
 msgstr "مصاريف إضافية"
-
 
 #: finance/models.py:152
 msgid "Frais d'inscription"
@@ -658,7 +649,7 @@ msgstr "مرفوضة"
 
 #: finance/models.py:222
 msgid "Toute l'année scolaire"
-msgstr "السنة الدراسية"
+msgstr "السنة الدراسية كاملة"
 
 #: finance/models.py:223
 msgid "Période déterminée"
@@ -666,7 +657,7 @@ msgstr "فترة محددة"
 
 #: finance/models.py:229
 msgid "remise demandée (%)"
-msgstr "التخفيض (%)"
+msgstr "التخفيض المطلوب (%)"
 
 #: finance/models.py:232
 msgid "Pourcentage appliqué à la mensualité."
@@ -694,7 +685,7 @@ msgstr "إخوة، وضعية اجتماعية، منحة، غياب طويل...
 
 #: finance/models.py:249
 msgid "demandée par"
-msgstr "استخلص من طرف"
+msgstr "طلب من طرف"
 
 #: finance/models.py:250
 msgid "demandée le"
@@ -712,11 +703,11 @@ msgstr "تاريخ القرار"
 msgid "motif de la décision"
 msgstr "سبب القرار"
 
-#: finance/models.py:261 students/admin.py:85
+#: finance/models.py:261 students/admin.py:86
 msgid "demande de remise"
-msgstr "طريقة الأداء"
+msgstr "طلب تخفيض"
 
-#: finance/models.py:262 students/admin.py:86
+#: finance/models.py:262 students/admin.py:87
 msgid "demandes de remise"
 msgstr "طلبات التخفيض"
 
@@ -734,24 +725,21 @@ msgstr "يجب أن يأتي الشهر الأخير بعد الشهر الأو�
 
 #: finance/models.py:293
 msgid "Toute l'année"
-msgstr "السنة"
+msgstr "السنة كاملة"
 
 #: finance/schedule.py:140
 #, python-format
 msgid "Règlement comptant (remise %(pct)s %%)"
 msgstr "أداء فوري (تخفيض %(pct)s %%)"
 
-
 #: finance/schedule.py:142
 msgid "Règlement comptant"
 msgstr "أداء فوري"
-
 
 #: finance/schedule.py:152
 #, python-format
 msgid "Versement %(n)d / %(total)d"
 msgstr "الدفعة %(n)d / %(total)d"
-
 
 #: hr/admin.py:19
 msgid "Identité"
@@ -761,7 +749,7 @@ msgstr "الهوية"
 msgid "Poste"
 msgstr "المنصب"
 
-#: hr/admin.py:26 students/admin.py:45
+#: hr/admin.py:26 students/admin.py:46
 msgid "Coordonnées"
 msgstr "معلومات الاتصال"
 
@@ -982,121 +970,118 @@ msgstr "بيان الأجر"
 msgid "bulletins de paie"
 msgstr "بيانات الأجور"
 
-#: students/admin.py:39
+#: students/admin.py:40
 msgid "État civil"
 msgstr "الحالة المدنية"
 
-#: students/admin.py:44
+#: students/admin.py:45
 msgid "Identifiants officiels"
 msgstr "المعرفات الرسمية"
 
-#: students/admin.py:46
+#: students/admin.py:47
 msgid "Dossier scolaire"
 msgstr "الملف المدرسي"
 
-#: students/admin.py:51 students/models.py:103
+#: students/admin.py:52 students/models.py:103
 msgid "âge"
 msgstr "السن"
 
-#: students/admin.py:55
+#: students/admin.py:56
 msgid "classe actuelle"
 msgstr "القسم الحالي"
 
-#: students/admin.py:102
+#: students/admin.py:103
 msgid "Inscription"
-msgstr "التسجيلات"
+msgstr "التسجيل"
 
-#: students/admin.py:104
+#: students/admin.py:105
 msgid "Scolarité"
 msgstr "الواجبات الدراسية"
 
-#: students/admin.py:106
+#: students/admin.py:107
 msgid "Échéancier"
 msgstr "جدولة الأداء"
 
-
-#: students/admin.py:109
+#: students/admin.py:129
 msgid "échéancier de l'année"
 msgstr "جدولة أداء السنة"
 
-
-#: students/admin.py:113
+#: students/admin.py:133
 msgid "Choisissez une formule de frais pour voir l'échéancier."
 msgstr "اختر صيغة المصاريف لعرض جدولة الأداء."
 
+#: students/admin.py:152
+msgid "À venir"
+msgstr "قادمة"
 
-#: students/admin.py:128
-msgid "Réglée"
-msgstr "مؤداة"
-
-
-#: students/admin.py:133
+#: students/admin.py:157
 #, python-format
 msgid "Reste %(amount)s DH"
 msgstr "المتبقي %(amount)s درهم"
 
+#: students/admin.py:161
+msgid "Réglée"
+msgstr "مؤداة"
 
-#: students/admin.py:145 templates/admin/dashboard_stats.html:93
-#: templates/students/document_blocked.html:45
+#: students/admin.py:178 templates/admin/dashboard_stats.html:93
 msgid "Mois"
 msgstr "الشهر"
 
-#: students/admin.py:145 templates/students/document_blocked.html:44
+#: students/admin.py:178 templates/students/document_blocked.html:44
 msgid "Échéance"
 msgstr "الاستحقاق"
 
-
-#: students/admin.py:145 templates/hr/payslip.html:55
+#: students/admin.py:178 templates/hr/payslip.html:55
 msgid "Montant (DH)"
 msgstr "المبلغ (درهم)"
 
-#: students/admin.py:145
+#: students/admin.py:178
 msgid "État"
-msgstr "الحالة المدنية"
+msgstr "الحالة"
 
-#: students/admin.py:147
+#: students/admin.py:180
 msgid "Total annuel"
-msgstr "المجموع السنوي (درهم)"
+msgstr "المجموع السنوي"
 
-#: students/admin.py:148
+#: students/admin.py:181
 #, python-format
 msgid "Versé : %(paid)s DH · reste dû à ce jour : %(due)s DH"
 msgstr "المؤدى : %(paid)s درهم · المتبقي إلى اليوم : %(due)s درهم"
 
-
-#: students/admin.py:167
+#: students/admin.py:201
 msgid "À jour"
 msgstr "في وضعية سليمة"
 
-#: students/admin.py:168, python-format
+#: students/admin.py:202
+#, python-format
 msgid "%d mois dû"
 msgid_plural "%d mois dus"
-msgstr[0] "من شهر"
-msgstr[1] "من شهر"
-msgstr[2] "من شهر"
-msgstr[3] "من شهر"
-msgstr[4] "من شهر"
-msgstr[5] "من شهر"
+msgstr[0] "%d شهر مستحق"
+msgstr[1] "%d شهر مستحق"
+msgstr[2] "%d شهران مستحقان"
+msgstr[3] "%d أشهر مستحقة"
+msgstr[4] "%d شهرا مستحقا"
+msgstr[5] "%d شهر مستحق"
 
-#: students/admin.py:173
+#: students/admin.py:207
 msgid "attestation"
 msgstr "شهادة"
 
-#: students/admin.py:177
+#: students/admin.py:211
 msgid "Attestation"
-msgstr "الإدارة"
+msgstr "الشهادة"
 
-#: students/admin.py:194
+#: students/admin.py:228
 msgid "Fait"
 msgstr "الواقعة"
 
-#: students/admin.py:196
+#: students/admin.py:230
 msgid "Suivi"
 msgstr "المتابعة"
 
-#: students/admin.py:239
+#: students/admin.py:273
 msgid "faits enregistrés"
-msgstr "لم يسجل أي أداء."
+msgstr "الوقائع المسجلة"
 
 #: students/models.py:11
 msgid "Numéro marocain attendu, ex. 0612345678 ou +212612345678."
@@ -1218,40 +1203,37 @@ msgstr "تخفيض ممنوح (إخوة، منحة...)، بالنسبة المئ
 msgid "Comptant en début d'année (remise)"
 msgstr "أداء فوري في بداية السنة (مع تخفيض)"
 
-
 #: students/models.py:143
 msgid "3 versements"
-msgstr "إنذار"
+msgstr "3 دفعات"
 
 #: students/models.py:144
 msgid "6 versements"
-msgstr "إنذار"
+msgstr "6 دفعات"
 
 #: students/models.py:145
 msgid "Mensuel"
-msgstr "الواجب الشهري"
+msgstr "شهري"
 
 #: students/models.py:148
 msgid "échéancier"
 msgstr "جدولة الأداء"
 
-
 #: students/models.py:150
 msgid ""
 "Le règlement comptant en début d'année ouvre droit à la remise prévue par la "
 "formule."
-msgstr "الأداء الفوري في بداية السنة يخول الاستفادة من التخفيض المنصوص عليه في الصيغة."
-
+msgstr ""
+"الأداء الفوري في بداية السنة يخول الاستفادة من التخفيض المنصوص عليه في "
+"الصيغة."
 
 #: students/models.py:155
 msgid "frais optionnels retenus"
 msgstr "المصاريف الاختيارية المعتمدة"
 
-
 #: students/models.py:156
 msgid "Manuels de la liste D achetés à l'école, options…"
 msgstr "كتب اللائحة D المشتراة من المدرسة، اختيارات أخرى..."
-
 
 #: students/models.py:160
 msgid "inscriptions"
@@ -1315,40 +1297,36 @@ msgstr "النقط"
 
 #: students/models.py:230
 msgid "nature (arabe)"
-msgstr "الاسم العائلي (بالعربية)"
+msgstr "النوع (بالعربية)"
 
 #: students/models.py:232
 msgid "fait négatif"
 msgstr "واقعة سلبية"
-
 
 #: students/models.py:233
 msgid ""
 "Décocher pour un fait positif (félicitations, encouragements, entraide…)."
 msgstr "ألغ التحديد بالنسبة لواقعة إيجابية (تهنئة، تشجيع، تعاون...)."
 
-
 #: students/models.py:235
 msgid "ordre d'affichage"
 msgstr "ترتيب العرض"
-
 
 #: students/models.py:236
 msgid "proposée à la saisie"
 msgstr "متاحة عند التسجيل"
 
-
 #: students/models.py:239
 msgid "nature de fait"
-msgstr "تاريخ النهاية"
+msgstr "نوع الواقعة"
 
 #: students/models.py:240
 msgid "natures de faits"
-msgstr "تاريخ النهاية"
+msgstr "أنواع الوقائع"
 
 #: students/models.py:258
 msgid "date du fait"
-msgstr "تاريخ النهاية"
+msgstr "تاريخ الواقعة"
 
 #: students/models.py:262
 msgid "Ex. : bavardage répété, aide apportée à un camarade."
@@ -1360,15 +1338,15 @@ msgstr "التفاصيل"
 
 #: students/models.py:268
 msgid "matière / cours"
-msgstr "المواد"
+msgstr "المادة / الدرس"
 
 #: students/models.py:272
 msgid "signalé par"
-msgstr "استخلص من طرف"
+msgstr "أبلغ عنه من طرف"
 
 #: students/models.py:273
 msgid "suite donnée"
-msgstr "السنة"
+msgstr "الإجراء المتخذ"
 
 #: students/models.py:274
 msgid "Sanction, entretien, mesure d'accompagnement…"
@@ -1380,11 +1358,11 @@ msgstr "تم إخبار أولياء الأمور"
 
 #: students/models.py:280
 msgid "fait de comportement"
-msgstr "تاريخ الأداء"
+msgstr "واقعة سلوكية"
 
 #: students/models.py:281
 msgid "comportement"
-msgstr "الأداء"
+msgstr "السلوك"
 
 #: students/views.py:35
 msgid "attestation de scolarité"
@@ -1619,7 +1597,7 @@ msgstr "القسم"
 
 #: templates/finance/receipt.html:42
 msgid "Objet du paiement"
-msgstr "نوع الأداء"
+msgstr "موضوع الأداء"
 
 #: templates/finance/receipt.html:51
 msgid "Mode de règlement"
@@ -1675,11 +1653,11 @@ msgstr "رقم CNSS"
 
 #: templates/hr/payslip.html:50
 msgid "Détail de la rémunération"
-msgstr "الأجرة"
+msgstr "تفصيل الأجرة"
 
 #: templates/hr/payslip.html:54
 msgid "Rubrique"
-msgstr "البيان"
+msgstr "البند"
 
 #: templates/hr/payslip.html:60
 msgid "Salaire brut"
@@ -1697,7 +1675,7 @@ msgstr "التأمين الإجباري عن المرض (حصة الأجير، %
 
 #: templates/hr/payslip.html:72
 msgid "Salaire net imposable"
-msgstr "صافي الأجر المستحق"
+msgstr "الأجر الصافي الخاضع للضريبة"
 
 #: templates/hr/payslip.html:76
 msgid "Déduction pour charges de famille"
@@ -1746,11 +1724,11 @@ msgstr ""
 
 #: templates/students/certificate.html:29
 msgid "Nom et prénom"
-msgstr "الاسم الشخصي"
+msgstr "الاسم الكامل"
 
 #: templates/students/certificate.html:38
 msgid "Né(e) le"
-msgstr "تاريخ التوظيف"
+msgstr "تاريخ الازدياد"
 
 #: templates/students/certificate.html:47
 msgid "Code Massar"
@@ -1777,7 +1755,7 @@ msgstr "بتاريخ"
 
 #: templates/students/certificate.html:85
 msgid "Cachet et signature de la direction"
-msgstr "خاتم وتوقيع المدرسة"
+msgstr "خاتم وتوقيع الإدارة"
 
 #: templates/students/document_blocked.html:4
 #: templates/students/document_blocked.html:22
@@ -1795,47 +1773,20 @@ msgstr ""
 
 #: templates/students/document_blocked.html:32
 msgid "Échéances non réglées"
-msgstr "واجبات شهرية متأخرة"
+msgstr "استحقاقات غير مؤداة"
 
 #: templates/students/document_blocked.html:36
 msgid "Montant restant dû"
 msgstr "المبلغ المتبقي"
 
-#: templates/students/document_blocked.html:46
+#: templates/students/document_blocked.html:45
 msgid "Reste dû (DH)"
-msgstr "الواجب الشهري (درهم)"
+msgstr "المتبقي (درهم)"
 
-#: templates/students/document_blocked.html:62
+#: templates/students/document_blocked.html:67
 msgid "Enregistrer un paiement"
-msgstr "نوع الأداء"
+msgstr "تسجيل أداء"
 
-#: templates/students/document_blocked.html:65
+#: templates/students/document_blocked.html:70
 msgid "Voir l'inscription"
-msgstr "التسجيل"
-
-#~ msgid "Félicitations"
-#~ msgstr "التسجيلات"
-
-#~ msgid "Encouragements"
-#~ msgstr "الأداءات"
-
-#~ msgid "Retenue"
-#~ msgstr "احتجاز"
-
-#~ msgid "Exclusion temporaire"
-#~ msgstr "إقصاء مؤقت"
-
-#~ msgid "Mois concernés"
-#~ msgstr "الشهر المعني"
-
-#~ msgid "Employé(e)s"
-#~ msgstr "المستخدمون"
-
-#~ msgid "Type de paiement"
-#~ msgstr "نوع الأداء"
-
-#~ msgid "Date"
-#~ msgstr "التاريخ"
-
-#~ msgid "Net imposable"
-#~ msgstr "الصافي الخاضع للضريبة"
+msgstr "عرض التسجيل"
