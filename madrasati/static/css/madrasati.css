@@ -1,0 +1,1480 @@
+/* ==========================================================================
+   Madrasati — thème de l'interface d'administration
+   Palette : vert émeraude (école/Maroc) sur fond ivoire, accent or zellige.
+   Typographie : Newsreader (titres), IBM Plex Sans (texte),
+   IBM Plex Sans Arabic (arabe / RTL).
+   ========================================================================== */
+
+html[data-theme="light"], html[data-theme="dark"], :root {
+  /* --- jetons Madrasati --- */
+  --m-ink: #152520;
+  --m-ink-2: #4A5A52;
+  --m-muted: #6E7C74;
+  --m-bg: #F7F2E8;
+  --m-surface: #FFFCF7;
+  --m-surface-2: #FBF6EC;
+  --m-line: #E5DBC9;
+  --m-hair: #EFE7D8;
+  --m-green-900: #0C3628;
+  --m-green-800: #103F2F;
+  --m-green-700: #14573D;
+  --m-green-600: #17654A;
+  --m-green-100: #E6F0EA;
+  --m-green-200: #C9DED2;
+  --m-gold: #E8C46A;
+  --m-sand: #DCD0BB;
+  --m-danger: #9C4426;
+  --m-danger-bg: #F7EAE3;
+  --m-radius: 12px;
+  --m-radius-sm: 9px;
+  --m-serif: Newsreader, Georgia, "Times New Roman", serif;
+  --m-sans: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
+
+  /* --- remappage des variables de l'admin Django --- */
+  --primary: var(--m-green-700);
+  --secondary: var(--m-green-900);
+  --accent: var(--m-gold);
+  --primary-fg: #FFF8EC;
+
+  --body-fg: var(--m-ink);
+  --body-bg: var(--m-bg);
+  --body-quiet-color: var(--m-muted);
+  --body-medium-color: var(--m-ink-2);
+  --body-loud-color: var(--m-green-900);
+
+  --header-color: #CFE0D6;
+  --header-branding-color: var(--m-gold);
+  --header-bg: var(--m-green-900);
+  --header-link-color: #FFF8EC;
+
+  --breadcrumbs-fg: var(--m-muted);
+  --breadcrumbs-link-fg: var(--m-green-700);
+  --breadcrumbs-bg: var(--m-surface);
+
+  --link-fg: var(--m-green-700);
+  --link-hover-color: var(--m-green-900);
+  --link-selected-fg: var(--m-green-600);
+
+  --hairline-color: var(--m-hair);
+  --border-color: var(--m-line);
+
+  --error-fg: #A3341C;
+  --message-success-bg: var(--m-green-100);
+  --message-warning-bg: #FBF0D8;
+  --message-error-bg: var(--m-danger-bg);
+
+  --darkened-bg: var(--m-surface-2);
+  --selected-bg: var(--m-green-100);
+  --selected-row: #FBF0D8;
+
+  --button-fg: #FFF8EC;
+  --button-bg: var(--m-green-700);
+  --button-hover-bg: var(--m-green-900);
+  --default-button-bg: var(--m-green-700);
+  --default-button-hover-bg: var(--m-green-900);
+  --close-button-bg: #7D8B83;
+  --close-button-hover-bg: var(--m-ink-2);
+  --delete-button-bg: #A3341C;
+  --delete-button-hover-bg: #862A16;
+
+  --object-tools-fg: #FFF8EC;
+  --object-tools-bg: var(--m-green-700);
+  --object-tools-hover-bg: var(--m-green-900);
+
+  --font-family-primary: var(--m-sans);
+  --link-underline: none;
+}
+
+/* Le thème reste identique en mode sombre : les écoles travaillent de jour,
+   et une bascule de palette casserait la lisibilité des documents. */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: light; }
+}
+
+body {
+  font-family: var(--m-sans);
+  background: var(--m-bg);
+  color: var(--m-ink);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --------------------------------------------------------------- En-tête */
+
+#header {
+  background: var(--m-green-900);
+  color: #CFE0D6;
+  padding: 0 24px;
+  min-height: 62px;
+  align-items: center;
+  border-bottom: 1px solid var(--m-green-800);
+  position: relative;
+  overflow: hidden;
+}
+#header::after {                     /* motif zellige discret */
+  content: "";
+  position: absolute;
+  inset-inline-end: -40px;
+  top: -30px;
+  width: 260px;
+  height: 160px;
+  opacity: .18;
+  pointer-events: none;
+  background-image:
+    linear-gradient(45deg, transparent 47%, var(--m-gold) 47%, var(--m-gold) 53%, transparent 53%),
+    linear-gradient(-45deg, transparent 47%, var(--m-gold) 47%, var(--m-gold) 53%, transparent 53%);
+  background-size: 34px 34px;
+}
+#branding { display: flex; align-items: center; }
+.m-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+.m-brand svg { flex: none; }
+.m-brand-name {
+  font-family: var(--m-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFF8EC;
+  line-height: 1.1;
+  letter-spacing: .01em;
+}
+.m-brand-ar {
+  font-family: "IBM Plex Sans Arabic", var(--m-sans);
+  font-size: 11.5px;
+  color: #7FA592;
+  margin-top: 1px;
+}
+#header a:link, #header a:visited { color: #FFF8EC; }
+#user-tools {
+  font-size: 12.5px;
+  color: #9FBCAC;
+  text-transform: none;
+  letter-spacing: normal;
+  position: relative;
+  z-index: 1;
+}
+#user-tools a { border-bottom: none; text-decoration: none; }
+#user-tools a:hover { color: var(--m-gold); }
+#logout-form button {
+  font-family: var(--m-sans);
+  font-size: 12.5px;
+  color: #FFF8EC;
+  border-bottom: none;
+}
+#logout-form button:hover { color: var(--m-gold); }
+
+/* --------------------------------------------------------- Fil d'Ariane */
+
+div.breadcrumbs {
+  background: var(--m-surface);
+  color: var(--m-muted);
+  border-bottom: 1px solid var(--m-line);
+  padding: 11px 24px;
+  font-size: 12.5px;
+}
+div.breadcrumbs a { color: var(--m-green-700); }
+div.breadcrumbs a:focus, div.breadcrumbs a:hover { color: var(--m-green-900); }
+
+/* ------------------------------------------------------- Barre latérale */
+
+/* La barre latérale est « sticky » sur 100 vh : sur une page longue la
+   colonne redevenait ivoire sous la barre. On prolonge sa teinte (et son
+   filet) derrière elle pour que la bande verte descende jusqu'en bas. */
+/* 23 px de poignée de repli + 276 px de barre = 299 px de colonne verte. */
+.main:has(> #nav-sidebar) {
+  background: linear-gradient(to right, var(--m-green-900) 0 23px,
+                              transparent 23px);
+}
+.main.shifted:has(> #nav-sidebar) {
+  background: linear-gradient(to right, var(--m-green-900) 0 298px,
+                              var(--m-green-800) 298px 299px,
+                              transparent 299px);
+}
+html[dir="rtl"] .main:has(> #nav-sidebar) {
+  background: linear-gradient(to left, var(--m-green-900) 0 23px,
+                              transparent 23px);
+}
+html[dir="rtl"] .main.shifted:has(> #nav-sidebar) {
+  background: linear-gradient(to left, var(--m-green-900) 0 298px,
+                              var(--m-green-800) 298px 299px,
+                              transparent 299px);
+}
+#nav-sidebar {
+  background: var(--m-green-900);
+  border-inline-end: 1px solid var(--m-green-800);
+  padding-top: 10px;
+}
+#nav-sidebar .module th,
+#nav-sidebar .module caption,
+#nav-sidebar .module td { background: transparent; border: 0; }
+#nav-sidebar .module { background: transparent; box-shadow: none; border: 0; margin-bottom: 4px; }
+#nav-sidebar .module caption a,
+#nav-sidebar .module th a,
+#nav-sidebar .module td a {
+  color: #C3D7CB;
+  font-size: 13.5px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  display: block;
+}
+#nav-sidebar .module caption a {
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #628A76;
+  font-weight: 500;
+  padding: 14px 14px 5px;
+}
+#nav-sidebar .module caption a:hover { color: #7FA592; background: transparent; }
+#nav-sidebar a:hover { background: var(--m-green-800); color: #FFF8EC; }
+#nav-sidebar .current-model a,
+#nav-sidebar th.current-model a,
+#nav-sidebar td.current-model a {
+  background: var(--m-green-600);
+  color: #FFF8EC;
+  font-weight: 500;
+}
+#nav-sidebar .app-madrasati { display: none; }
+#nav-filter {
+  background: var(--m-green-800);
+  border: 1px solid #1B4E3C;
+  color: #E4EFE8;
+  border-radius: 8px;
+  margin: 6px 12px 10px;
+  width: calc(100% - 24px);
+  padding: 8px 11px;
+  font-family: var(--m-sans);
+  font-size: 13px;
+}
+#nav-filter::placeholder { color: #6F9583; }
+#nav-filter:focus { outline: 2px solid var(--m-green-600); outline-offset: 1px; }
+.toggle-nav-sidebar {
+  background: var(--m-green-900);
+  border-inline-end: 1px solid var(--m-green-800);
+  color: #7FA592;
+}
+.toggle-nav-sidebar:hover { background: var(--m-green-800); color: var(--m-gold); }
+
+/* -------------------------------------------------------------- Contenu */
+
+#content { padding: 22px 24px 40px; }
+#content > h1, .colM h1, #content-main > h1 {
+  font-family: var(--m-serif);
+  font-weight: 500;
+  font-size: 27px;
+  letter-spacing: -.015em;
+  color: var(--m-ink);
+  margin-bottom: 16px;
+}
+h2, h3 { font-family: var(--m-serif); font-weight: 500; letter-spacing: -.01em; }
+
+.module {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.module > h2, .module caption, .inline-group h2 {
+  background: var(--m-surface-2);
+  color: var(--m-green-900);
+  font-family: var(--m-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--m-line);
+}
+/* Django colore ces liens avec « a.section:link » (spécificité plus forte
+   que « .module caption a ») : sans ces sélecteurs, les intitulés
+   d'application restaient ivoire sur ivoire, donc illisibles. */
+.module caption a.section:link, .module caption a.section:visited,
+.module > h2 a.section:link, .module > h2 a.section:visited,
+.module caption a, .module > h2 a { color: var(--m-green-900); }
+.module caption a.section:hover, .module > h2 a.section:hover { color: var(--m-green-700); }
+/* La première colonne (nom du modèle) doit occuper la place restante,
+   sinon les libellés se coupent en plein mot. */
+/* Le nom du modèle prend la place restante ; « break-word » hérité de
+   Django coupait « Utilisateurs » en plein milieu. */
+.dashboard .module table th {
+  width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.dashboard .module table td { white-space: nowrap; width: 1%; }
+.dashboard td, .dashboard th { border-bottom: 1px solid var(--m-hair); padding: 10px 14px; }
+.dashboard tr:last-child td, .dashboard tr:last-child th { border-bottom: 0; }
+.module table tbody tr:hover { background: var(--m-surface-2); }
+
+/* Boutons et outils d'objet */
+.object-tools a, .object-tools a:link, .object-tools a:visited {
+  border-radius: var(--m-radius-sm);
+  font-family: var(--m-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 9px 15px;
+  box-shadow: none;
+}
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  border-radius: var(--m-radius-sm);
+  font-family: var(--m-sans);
+  font-weight: 500;
+  padding: 9px 15px;
+  border: 1px solid transparent;
+}
+.button:active, input[type=submit]:active { transform: translateY(1px); }
+.button.default, input[type=submit].default, .submit-row input.default {
+  border-color: var(--m-green-900);
+  font-weight: 600;
+}
+.submit-row {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  padding: 14px 18px;
+  margin: 0 0 18px;
+}
+.deletelink-box a, a.deletelink { border-radius: var(--m-radius-sm); }
+
+/* Formulaires */
+.form-row { border-bottom: 1px solid var(--m-hair); padding: 13px 18px; }
+fieldset.module { padding-bottom: 2px; }
+.aligned label { color: var(--m-ink-2); font-weight: 500; font-size: 13px; }
+input[type=text], input[type=password], input[type=email], input[type=url],
+input[type=number], input[type=tel], input[type=date], input[type=time],
+textarea, select, .vTextField {
+  border: 1px solid var(--m-sand);
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface);
+  padding: 8px 11px;
+  font-family: var(--m-sans);
+  font-size: 13.5px;
+  color: var(--m-ink);
+}
+input:focus, textarea:focus, select:focus, .vTextField:focus {
+  outline: 2px solid var(--m-green-600);
+  outline-offset: 0;
+  border-color: var(--m-green-600);
+}
+.help, p.help, div.help, .help-tooltip { color: var(--m-muted); font-size: 12px; }
+
+/* Liste des objets */
+#changelist #toolbar {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+#changelist-search input[type=text] { min-width: 260px; }
+#changelist .actions {
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  padding: 10px 16px;
+  color: var(--m-ink-2);
+}
+#changelist table { background: var(--m-surface); }
+#changelist table thead th, .results thead th {
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  padding: 0;
+}
+#changelist table thead th a, .results thead th a,
+#changelist table thead th.sorted a, #changelist table thead th div.text a {
+  font-size: 11px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+  font-weight: 500;
+  padding: 12px 14px;
+}
+#changelist table tbody td, #changelist table tbody th,
+.results tbody td, .results tbody th {
+  border-bottom: 1px solid var(--m-hair);
+  padding: 11px 14px;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+#changelist tbody tr:hover td, #changelist tbody tr:hover th { background: var(--m-surface-2); }
+#changelist-filter {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  margin-inline-start: 16px;
+}
+#changelist-filter h2, #changelist-filter h3 {
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  font-family: var(--m-serif);
+  font-size: 14px;
+  color: var(--m-green-900);
+  padding: 11px 14px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+#changelist-filter li.selected a { color: var(--m-green-700); font-weight: 600; }
+.paginator {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-top: 0;
+  border-radius: 0 0 var(--m-radius) var(--m-radius);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--m-muted);
+}
+.paginator a:link, .paginator a:visited {
+  background: var(--m-surface-2);
+  border: 1px solid var(--m-line);
+  color: var(--m-green-700);
+  border-radius: 7px;
+  padding: 5px 10px;
+}
+.paginator .this-page {
+  background: var(--m-green-700);
+  color: #FFF8EC;
+  border-radius: 7px;
+  padding: 5px 10px;
+}
+
+/* Messages */
+ul.messagelist li {
+  border-radius: var(--m-radius-sm);
+  border: 1px solid var(--m-line);
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--m-ink);
+}
+ul.messagelist li.success { background: var(--m-green-100); border-color: var(--m-green-200); }
+ul.messagelist li.error { background: var(--m-danger-bg); border-color: #E6CFC4; color: var(--m-danger); }
+
+/* Documents imprimables : liens depuis les listes */
+a.m-print { white-space: nowrap; font-weight: 500; }
+
+/* Chiffres alignés partout où ils comptent */
+.num, td.num, .field-amount, .field-net, .field-gross { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------------ RTL */
+
+html[dir="rtl"] body, html[dir="rtl"] input, html[dir="rtl"] select,
+html[dir="rtl"] textarea, html[dir="rtl"] .button {
+  font-family: "IBM Plex Sans Arabic", var(--m-sans);
+}
+html[dir="rtl"] .m-brand-name { font-family: "IBM Plex Sans Arabic", var(--m-serif); }
+html[dir="rtl"] #header::after { transform: scaleX(-1); }
+
+/* ------------------------------------------------------ Page de connexion */
+
+body.m-login-page { background: var(--m-bg); }
+body.m-login-page #container { display: block; }
+body.m-login-page #main { display: block; padding: 0; }
+body.m-login-page .content, body.m-login-page #content {
+  padding: 0; margin: 0; max-width: none; width: 100%;
+}
+body.m-login-page #footer { display: none; }
+
+.m-login, .m-login *, .m-dash, .m-dash * { box-sizing: border-box; }
+
+.m-login {
+  display: flex;
+  min-height: 100vh;
+  background: var(--m-bg);
+}
+.m-login-art {
+  flex: 0 0 clamp(320px, 42%, 560px);
+  background: var(--m-green-900);
+  color: #CFE0D6;
+  padding: 44px 44px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.m-login-art::before {                 /* zellige */
+  content: "";
+  position: absolute;
+  top: -60px;
+  inset-inline-end: -70px;
+  width: 300px;
+  height: 300px;
+  opacity: .13;
+  background-image:
+    linear-gradient(45deg, transparent 47%, var(--m-gold) 47%, var(--m-gold) 53%, transparent 53%),
+    linear-gradient(-45deg, transparent 47%, var(--m-gold) 47%, var(--m-gold) 53%, transparent 53%);
+  background-size: 38px 38px;
+}
+.m-login-brand { display: flex; align-items: center; gap: 12px; position: relative; }
+.m-login-brand .m-brand-name, .m-login-brand .m-brand-ar { display: block; }
+.m-login-head {
+  font-family: var(--m-serif);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.25;
+  color: #FFF8EC;
+  margin: 0 0 16px;
+  letter-spacing: -.015em;
+  text-wrap: pretty;
+  position: relative;
+}
+.m-login-sub {
+  color: #9FBCAC;
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 400px;
+  position: relative;
+}
+.m-login-list {
+  list-style: none;
+  margin: 30px 0 0;
+  padding: 24px 0 0;
+  border-top: 1px solid #1B4E3C;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  position: relative;
+}
+.m-login-list li {
+  list-style: none;
+  font-size: 13.5px;
+  color: #C3D7CB;
+  padding-inline-start: 22px;
+  position: relative;
+}
+.m-login-list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--m-gold);
+  transform: rotate(45deg);
+}
+.m-login-foot { font-size: 12px; color: #628A76; position: relative; }
+
+.m-login-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+}
+.m-login-inner { width: 100%; max-width: 400px; }
+.m-login-title {
+  font-family: var(--m-serif);
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  letter-spacing: -.015em;
+  color: var(--m-ink);
+}
+.m-login-hint { color: var(--m-muted); margin: 0 0 28px; font-size: 14px; }
+.m-form { display: flex; flex-direction: column; gap: 18px; }
+.m-field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--m-ink-2);
+  margin-bottom: 7px;
+}
+.m-field input[type=text], .m-field input[type=password] {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  background: var(--m-surface);
+  border: 1px solid var(--m-sand);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--m-sans);
+}
+.m-field .errorlist { margin: 0 0 6px; padding: 0; list-style: none; color: var(--m-danger); font-size: 12.5px; }
+.m-login-reset { font-size: 13px; margin-top: -4px; }
+.m-login-submit {
+  height: 46px;
+  border-radius: 10px;
+  background: var(--m-green-700);
+  color: #FFF8EC;
+  border: 1px solid var(--m-green-900);
+  font-family: var(--m-sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.m-login-submit:hover { background: var(--m-green-900); }
+.m-alert {
+  background: var(--m-danger-bg);
+  border: 1px solid #E6CFC4;
+  color: var(--m-danger);
+  border-radius: var(--m-radius-sm);
+  padding: 11px 14px;
+  font-size: 13.5px;
+  margin: 0 0 18px;
+}
+.m-login-note {
+  margin: 28px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--m-line);
+  font-size: 12.5px;
+  color: var(--m-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .m-login { flex-direction: column; }
+  .m-login-art { width: 100%; max-width: none; padding: 32px 28px; gap: 26px; }
+  .m-login-head { font-size: 27px; }
+  .m-login-list { display: none; }
+}
+
+/* ------------------------------------------------------- Tableau de bord */
+
+.m-sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+.m-dash { margin: 0 0 26px; }
+
+.m-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.m-tile {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  padding: 15px 17px 16px;
+}
+.m-tile-k {
+  font-size: 11px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+}
+.m-tile-v {
+  font-size: 29px;
+  font-weight: 600;
+  letter-spacing: -.025em;
+  line-height: 1.05;
+  margin-top: 7px;
+  color: var(--m-green-900);
+}
+.m-tile-v span { font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.m-tile-s { font-size: 12px; color: var(--m-muted); margin-top: 7px; }
+.m-tile--accent {
+  background: var(--m-green-900);
+  border-color: var(--m-green-900);
+}
+.m-tile--accent .m-tile-k { color: #7FA592; }
+.m-tile--accent .m-tile-v { color: #FFF8EC; }
+.m-tile--accent .m-tile-s { color: #9FBCAC; }
+
+.m-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+/* Le graphe s'étire pour rejoindre la colonne des impayés : sans cela, une
+   longue liste de retards laissait un grand vide sous la courbe. */
+.m-cols > .m-card { display: flex; flex-direction: column; }
+.m-chart { flex: 1 1 auto; display: flex; flex-direction: column; }
+@media (max-width: 1100px) { .m-cols { grid-template-columns: minmax(0, 1fr); } }
+
+.m-card {
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  overflow: hidden;
+}
+.m-card-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--m-hair);
+}
+.m-card-h--mid { border-top: 1px solid var(--m-hair); margin-top: 2px; }
+.m-card-h h2 {
+  font-family: var(--m-serif);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--m-ink);
+  letter-spacing: -.01em;
+  text-transform: none;
+}
+.m-card-note { font-size: 12px; color: var(--m-muted); }
+
+/* Graphique : barres verticales, une série, échelle relative au mois le plus fort */
+.m-chart { padding: 20px 18px 6px; }
+.m-chart-plot {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;                       /* fine gouttière entre les barres */
+  height: 168px;
+  border-bottom: 1px solid var(--m-line);
+}
+.m-bar-slot { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.m-bar-track {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 3px;
+}
+.m-bar {
+  width: 100%;
+  max-width: 34px;
+  min-height: 2px;                /* un mois sans recette reste visible */
+  background: var(--m-green-700);
+  border-radius: 4px 4px 0 0;
+  transition: background .12s ease;
+}
+.is-current .m-bar { background: var(--m-green-900); }
+.m-bar-track:hover .m-bar { background: var(--m-green-600); }
+.m-bar-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--m-green-900);
+  color: #FFF8EC;
+  font-size: 11.5px;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: 7px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease;
+  z-index: 2;
+  font-variant-numeric: tabular-nums;
+}
+.m-bar-track:hover .m-bar-tip, .m-bar-track:focus-within .m-bar-tip { opacity: 1; }
+/* Sur écran tactile, l'infobulle reste « collée » après un appui :
+   les chiffres sont de toute façon listés sous le graphique. */
+@media (hover: none) { .m-bar-tip { display: none; } }
+.m-bar-x {
+  text-align: center;
+  font-size: 11px;
+  color: var(--m-muted);
+  padding-top: 7px;
+}
+.is-current .m-bar-x { color: var(--m-green-900); font-weight: 600; }
+.m-chart-data { padding: 4px 18px 16px; }
+.m-chart-data summary {
+  font-size: 12.5px;
+  color: var(--m-green-700);
+  cursor: pointer;
+  padding: 6px 0;
+}
+.m-chart-data table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+.m-chart-data th, .m-chart-data td {
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 400;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--m-hair);
+  color: var(--m-ink-2);
+}
+.m-chart-data td.num { text-align: right; }
+.m-chart-data thead th { color: var(--m-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; }
+
+/* Listes (retards, derniers paiements) */
+.m-list { list-style: none; margin: 0; padding: 0; }
+.m-list li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--m-hair);
+}
+.m-list li:last-child { border-bottom: 0; }
+.m-av {
+  width: 32px; height: 32px; flex: none;
+  border-radius: 9px;
+  background: var(--m-green-100);
+  color: var(--m-green-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  text-transform: uppercase;
+}
+.m-list-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.m-list-main a { font-size: 13.5px; font-weight: 500; }
+.m-list-sub { font-size: 11.5px; color: var(--m-muted); }
+.m-list-end { text-align: end; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.m-amount { font-size: 13.5px; font-weight: 600; color: var(--m-green-900); }
+.m-chip {
+  display: inline-flex; align-items: center;
+  height: 22px; padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11.5px; font-weight: 500;
+  background: var(--m-hair); color: var(--m-ink-2);
+}
+.m-chip--late { background: var(--m-danger-bg); color: var(--m-danger); }
+.m-empty { padding: 18px; color: var(--m-muted); font-size: 13px; margin: 0; }
+
+/* ---------------------------------------------- Correctifs de mise en page */
+
+/* Django fixe la largeur du tableau de bord à 600 px : on reprend toute la
+   largeur et on dispose les modules en grille. */
+.dashboard #content { width: auto; margin-right: 0; }
+.dashboard #content-main {
+  float: none;
+  width: 100%;
+  display: grid;
+  /* 460 px : de quoi loger « Établissements » et ses deux actions sur
+     une seule ligne, sans césure. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.dashboard #content-main > .m-dash { grid-column: 1 / -1; margin-bottom: 0; }
+.dashboard #content-main > .module { margin-bottom: 0; }
+.dashboard #content-related {
+  float: none;
+  width: 100%;
+  margin: 16px 0 0;
+  position: static;
+}
+.dashboard #content-related .module { margin-bottom: 0; }
+
+/* Barre latérale : neutraliser les fonds clairs hérités des modules. */
+#nav-sidebar table, #nav-sidebar thead, #nav-sidebar tbody,
+#nav-sidebar tr, #nav-sidebar caption { background: transparent; }
+#nav-sidebar .module tbody tr:hover { background: transparent; }
+#nav-sidebar a.addlink, #nav-sidebar .addlink {
+  color: #7FA592;
+  font-size: 12px;
+  opacity: .85;
+}
+#nav-sidebar a.addlink:hover { color: var(--m-gold); background: transparent; }
+
+/* L'icône « + » du bouton d'ajout a besoin de sa gouttière à droite. */
+.object-tools a.addlink, .object-tools a.viewsitelink { padding-right: 30px; }
+html[dir="rtl"] .object-tools a.addlink,
+html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 15px; padding-left: 30px; }
+
+/* Les listes larges défilent dans leur propre conteneur. */
+#changelist .results { overflow-x: auto; }
+
+/* Le bouton de déconnexion garde la casse du reste de l'en-tête. */
+#user-tools a, #logout-form button { text-transform: none; letter-spacing: normal; }
+
+.m-chart-foot {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 14px 18px;
+  margin-top: 10px;
+  border-top: 1px solid var(--m-hair);
+}
+.m-foot-v {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--m-green-900);
+  margin-top: 5px;
+  letter-spacing: -.015em;
+}
+.m-foot-v .num { font-size: 14px; font-weight: 500; color: var(--m-muted); }
+.m-chart-plot { height: auto; min-height: 190px; flex: 1 1 auto; }
+
+/* Montants : îlot directionnel + chiffres tabulaires. */
+.m-money { unicode-bidi: isolate; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ====================================================================
+   Affichage mobile (téléphones et petites tablettes)
+   ==================================================================== */
+
+@media (max-width: 1024px) {
+  /* Le panneau illustré de la connexion passe au-dessus du formulaire :
+     sans annuler la base flex, il gardait 320 px et débordait de l'écran. */
+  .m-login-art {
+    flex: none;
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 767px) {
+  /* --- En-tête ------------------------------------------------------
+     responsive.css de Django est chargé APRÈS cette feuille : ses règles
+     l'emportent à spécificité égale. On préfixe par « body » pour rendre
+     la main à la mise en page mobile de Madrasati. */
+  body #header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 14px;
+    /* #container est un conteneur flex vertical : sans « flex: none »
+       (et avec min-height:0) l'en-tête se comprimait jusqu'à disparaître,
+       son contenu étant rogné par overflow:hidden. */
+    flex: none;
+    min-height: auto;
+    height: auto;
+  }
+  body #branding, body #user-tools { flex: 0 0 auto; width: 100%; }
+  .m-brand-name { font-size: 17px; }
+  .m-brand-ar { font-size: 10.5px; }
+  #user-tools {
+    font-size: 11.5px;
+    line-height: 1.5;
+    word-spacing: normal;
+  }
+  #header::after { width: 150px; height: 110px; }
+
+  div.breadcrumbs { padding: 9px 14px; font-size: 11.5px; }
+
+  /* --- Contenu ------------------------------------------------------ */
+  #content { padding: 16px 14px 32px; }
+  body.m-login-page #main #content, body.m-login-page #main .content { padding: 0; }
+  .m-login-art { padding: 26px 22px; gap: 18px; }
+  .m-login-head { font-size: 24px; }
+  .m-login-sub { font-size: 14px; }
+  .m-login-panel { padding: 28px 22px 36px; }
+  #content > h1, .colM h1, #content-main > h1 { font-size: 21px; margin-bottom: 12px; }
+
+  /* --- Tableau de bord --------------------------------------------- */
+  .m-tiles { grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px; }
+  .m-tile { padding: 12px 13px 13px; }
+  .m-tile-v { font-size: 23px; }
+  .m-tile-v span { font-size: 13px; }
+  .m-tile-k { font-size: 10px; letter-spacing: .08em; }
+  .m-tile-s { font-size: 11px; }
+
+  .m-card-h { padding: 12px 14px 10px; }
+  .m-card-h h2 { font-size: 15px; }
+  .m-card-note { font-size: 11px; }
+
+  .m-chart { padding: 16px 12px 4px; }
+  .m-chart-plot { height: 140px; min-height: 0; flex: none; }
+  .m-bar { border-radius: 3px 3px 0 0; }
+  .m-bar-x { font-size: 9.5px; padding-top: 5px; }
+  .m-chart-foot { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 14px; }
+  .m-foot-v { font-size: 15px; }
+
+  .m-list li { padding: 10px 14px; gap: 9px; }
+  .m-list-main a { font-size: 13px; }
+  .m-av { width: 28px; height: 28px; font-size: 11px; }
+  .m-amount { font-size: 13px; }
+
+  /* Les modules de l'accueil s'empilent, et leurs libellés peuvent
+     revenir à la ligne (ils étaient forcés sur une seule ligne). */
+  .dashboard #content-main { grid-template-columns: minmax(0, 1fr); }
+  .dashboard .module table, .dashboard .module tbody { display: block; width: 100%; }
+  /* Un <caption> dans un tableau passé en display:block perd sa mise en
+     forme : on le rétablit en bandeau de carte. */
+  .dashboard .module caption {
+    display: block;
+    background: var(--m-surface-2);
+    color: var(--m-green-900);
+    border-bottom: 1px solid var(--m-line);
+    padding: 11px 14px;
+  }
+  .dashboard .module tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 14px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--m-hair);
+  }
+  .dashboard .module tr:last-child { border-bottom: 0; }
+  .dashboard .module th, .dashboard .module td {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+    white-space: normal;
+  }
+  .dashboard .module th { flex: 1 1 100%; font-weight: 500; }
+  .dashboard .module td { font-size: 12.5px; }
+
+  /* --- Listes d'objets ---------------------------------------------- */
+  #changelist #toolbar { padding: 10px 12px; }
+  #changelist-search input[type=text],
+  #toolbar #searchbar { min-width: 0; width: 100%; box-sizing: border-box; }
+  #changelist .actions { padding: 9px 12px; }
+  #changelist-filter { margin: 12px 0 0; width: 100%; }
+  #changelist table tbody td, #changelist table tbody th,
+  .results tbody td, .results tbody th { padding: 10px 12px; font-size: 13px; }
+
+  /* --- Formulaires --------------------------------------------------- */
+  .form-row { padding: 11px 14px; }
+  input[type=text], input[type=password], input[type=email], input[type=url],
+  input[type=number], input[type=tel], input[type=date], input[type=time],
+  textarea, select, .vTextField {
+    max-width: 100%;
+    /* 16 px : en dessous, iOS zoome automatiquement sur le champ actif. */
+    font-size: 16px;
+  }
+  .submit-row { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .submit-row input, .submit-row a { width: 100%; text-align: center; }
+  /* Les tableaux en ligne (inscriptions, paiements) défilent seuls. */
+  .inline-group .tabular, .inline-group .module,
+  fieldset .form-row .related-widget-wrapper { overflow-x: auto; }
+  /* Sous 767 px la barre latérale se replie : plus de bande à prolonger. */
+  .main, .main.shifted { background: none !important; }
+  .object-tools { margin-top: 0; }
+  .object-tools a, .object-tools a:link, .object-tools a:visited { font-size: 12.5px; padding: 8px 12px; }
+  /* Conserver la gouttière de l'icône « + », sinon elle chevauche le texte. */
+  .object-tools a.addlink, .object-tools a.viewsitelink { padding-right: 30px; }
+  html[dir="rtl"] .object-tools a.addlink,
+  html[dir="rtl"] .object-tools a.viewsitelink { padding-right: 12px; padding-left: 30px; }
+}
+
+/* ------------------------------------------------------------ État vide */
+
+/* Django réserve 400 px de hauteur aux listes filtrables (#changelist.filtered)
+   pour loger la colonne de filtres ; quand celle-ci est masquée, cela laissait
+   un grand vide sous le message. */
+#changelist:has(.m-blank) { min-height: 0; }
+
+.m-blank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 52px 24px 56px;
+  background: var(--m-surface);
+}
+.m-blank svg { margin-bottom: 12px; }
+.m-blank h2 {
+  font-family: var(--m-serif);
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--m-ink);
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-transform: none;
+  letter-spacing: -.01em;
+}
+.m-blank p {
+  color: var(--m-muted);
+  font-size: 13.5px;
+  margin: 0;
+  max-width: 42ch;
+  line-height: 1.6;
+}
+.m-blank-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--m-radius-sm);
+  background: var(--m-green-700);
+  color: #FFF8EC;
+  border: 1px solid var(--m-green-900);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.m-blank-btn:link, .m-blank-btn:visited { color: #FFF8EC; }
+.m-blank-btn:hover { background: var(--m-green-900); color: #FFF8EC; }
+.m-blank-btn.ghost {
+  background: var(--m-surface);
+  color: var(--m-green-700);
+  border-color: var(--m-sand);
+}
+.m-blank-btn.ghost:link, .m-blank-btn.ghost:visited { color: var(--m-green-700); }
+.m-blank-btn.ghost:hover { background: var(--m-surface-2); color: var(--m-green-900); }
+
+@media (max-width: 767px) {
+  .m-blank { padding: 38px 18px 42px; }
+  .m-blank h2 { font-size: 17px; }
+}
+
+/* ====================================================================
+   Finitions : icônes, panneau de filtres, widgets de formulaire
+   ==================================================================== */
+
+/* --- Icônes -----------------------------------------------------------
+   L'admin livre des icônes SVG multicolores (plus vert, crayon jaune,
+   œil bleu, croix rouge). On les repeint en masque monochrome pour
+   qu'elles suivent la couleur du texte et forment un jeu cohérent. */
+
+.addlink, .changelink, .viewlink, .deletelink, .hidelink,
+.inlinechangelink, .inlineviewlink {
+  background: none;
+  padding-left: 19px;
+  position: relative;
+}
+html[dir="rtl"] .addlink, html[dir="rtl"] .changelink,
+html[dir="rtl"] .viewlink, html[dir="rtl"] .deletelink,
+html[dir="rtl"] .hidelink { padding-left: 0; padding-right: 19px; }
+
+.object-tools a.addlink, .object-tools a.viewsitelink { padding-left: 15px; }
+.object-tools a.addlink::before, .object-tools a.viewsitelink::before { content: none; }
+
+.addlink::before, .changelink::before, .viewlink::before,
+.deletelink::before, .hidelink::before,
+.inlinechangelink::before, .inlineviewlink::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  background-color: currentColor;
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+.addlink::before {
+  -webkit-mask-image: url(../admin/img/icon-addlink.svg);
+  mask-image: url(../admin/img/icon-addlink.svg);
+}
+.changelink::before, .inlinechangelink::before {
+  -webkit-mask-image: url(../admin/img/icon-changelink.svg);
+  mask-image: url(../admin/img/icon-changelink.svg);
+}
+.viewlink::before, .inlineviewlink::before {
+  -webkit-mask-image: url(../admin/img/icon-viewlink.svg);
+  mask-image: url(../admin/img/icon-viewlink.svg);
+}
+.deletelink::before {
+  -webkit-mask-image: url(../admin/img/icon-deletelink.svg);
+  mask-image: url(../admin/img/icon-deletelink.svg);
+}
+.hidelink::before {
+  -webkit-mask-image: url(../admin/img/icon-hidelink.svg);
+  mask-image: url(../admin/img/icon-hidelink.svg);
+}
+
+/* --- Barre latérale : ligne du modèle courant -------------------------
+   Django peint toute la ligne (« --selected-row », ici sable pâle), ce
+   qui produisait un bandeau clair barrant la colonne sombre. Seul le
+   lien du modèle porte désormais la pastille. */
+#nav-sidebar .current-model { background: transparent; }
+#nav-sidebar .module th.current-model a { background: var(--m-green-600); color: #FFF8EC; font-weight: 500; }
+#nav-sidebar .module td.current-model a,
+#nav-sidebar .module td a.addlink {
+  background: transparent;
+  color: #7FA592;
+  font-weight: 400;
+}
+#nav-sidebar .module td a.addlink:hover { background: var(--m-green-800); color: var(--m-gold); }
+
+/* --- Panneau de filtres ---------------------------------------------- */
+
+#changelist-filter { padding-bottom: 4px; overflow: hidden; }
+#changelist-filter h2 {
+  font-family: var(--m-serif);
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--m-ink);
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+  padding: 13px 16px;
+  margin: 0;
+}
+#changelist-filter-extra-actions {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--m-hair);
+  font-weight: 400;
+}
+#changelist-filter-extra-actions h3 { margin: 0; font-size: 12.5px; font-weight: 400; }
+#changelist-filter-extra-actions h3 + h3 { margin-top: 6px; }
+
+#changelist-filter details { border-bottom: 1px solid var(--m-hair); }
+#changelist-filter details:last-of-type { border-bottom: 0; }
+#changelist-filter summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+  background: none;
+}
+#changelist-filter summary::-webkit-details-marker,
+#changelist-filter summary::marker { display: none; content: ""; }
+#changelist-filter details > summary::before,
+#changelist-filter details[open] > summary::before { content: none; }
+#changelist-filter summary::after {          /* chevron discret */
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-right: 1.5px solid var(--m-muted);
+  border-bottom: 1.5px solid var(--m-muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .15s ease;
+}
+#changelist-filter details[open] > summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+#changelist-filter summary:hover { color: var(--m-ink-2); }
+
+#changelist-filter ul {
+  margin: 0;
+  padding: 0 10px 12px;
+  list-style: none;
+  border-bottom: 0;
+}
+#changelist-filter li { margin: 0; padding: 0; border: 0; }
+#changelist-filter li a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--m-ink-2);
+  border-left: 0;
+}
+#changelist-filter li a:hover { background: var(--m-surface-2); color: var(--m-green-900); }
+#changelist-filter li.selected { border-left: 0; padding-left: 0; margin-left: 0; }
+#changelist-filter li.selected a {
+  background: var(--m-green-100);
+  color: var(--m-green-900);
+  font-weight: 600;
+}
+
+/* --- Champs de formulaire -------------------------------------------- */
+
+select, .vTextField, input[type=text], input[type=password], input[type=email],
+input[type=url], input[type=number], input[type=tel] {
+  min-height: 38px;
+  line-height: 1.35;
+}
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 32px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236E7C74' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+}
+html[dir="rtl"] select { background-position: left 12px center; }
+select[multiple] { background-image: none; padding-inline-end: 11px; }
+
+/* Boutons d'action à côté d'un champ lié (modifier, ajouter, voir…) */
+.related-widget-wrapper { align-items: center; gap: 0 6px; }
+.related-widget-wrapper-link {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface);
+  opacity: 1;
+  filter: none;
+}
+.related-widget-wrapper-link img { display: none; }
+.related-widget-wrapper-link::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  background-color: var(--m-green-700);
+  -webkit-mask-size: 15px 15px; mask-size: 15px 15px;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
+.related-widget-wrapper-link:hover { background: var(--m-green-100); border-color: var(--m-green-200); }
+.change-related::before {
+  -webkit-mask-image: url(../admin/img/icon-changelink.svg);
+  mask-image: url(../admin/img/icon-changelink.svg);
+}
+.add-related::before {
+  -webkit-mask-image: url(../admin/img/icon-addlink.svg);
+  mask-image: url(../admin/img/icon-addlink.svg);
+}
+.view-related::before {
+  -webkit-mask-image: url(../admin/img/icon-viewlink.svg);
+  mask-image: url(../admin/img/icon-viewlink.svg);
+}
+.delete-related::before {
+  -webkit-mask-image: url(../admin/img/icon-deletelink.svg);
+  mask-image: url(../admin/img/icon-deletelink.svg);
+  background-color: #A3341C;
+}
+.delete-related:hover { background: var(--m-danger-bg); border-color: #E6CFC4; }
+/* Lien désactivé (aucun objet sélectionné) : gris, sans relief. */
+.related-widget-wrapper-link:not([href]) { opacity: .45; pointer-events: none; }
+
+/* Pastille de statut (demandes de remise, cycles de paie…) */
+.m-status {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Tuile signalant une action en attente */
+.m-tile--flag { border-color: #E6D4A8; background: #FDF8EC; }
+.m-tile--flag .m-tile-v a { color: var(--m-green-900); }
+.m-tile--flag .m-tile-v a:hover { color: var(--m-green-700); text-decoration: underline; }
+
+/* --- Formulaires : finitions ------------------------------------------ */
+
+/* Case à cocher et bouton radio aux couleurs du thème (bleu système sinon). */
+input[type=checkbox], input[type=radio] {
+  accent-color: var(--m-green-700);
+  width: 15px;
+  height: 15px;
+}
+
+/* L'en-tête d'un groupe de champs déborde du cadre arrondi : on le rend
+   solidaire de la carte. */
+fieldset.module > h2 {
+  border: 0;
+  border-bottom: 1px solid var(--m-line);
+  margin: 0;
+}
+fieldset.module { padding-top: 0; }
+
+/* Champ en lecture seule (empreinte du mot de passe, horodatages…) :
+   le texte long doit revenir à la ligne plutôt que déborder. */
+.form-row .readonly, div.readonly, .form-row p.datetime { overflow-wrap: anywhere; }
+.form-row .readonly { color: var(--m-ink-2); }
+
+/* Sélecteur à deux colonnes (groupes, permissions) : la colonne « choisis »
+   était écrite en vert foncé sur vert foncé, donc illisible. */
+.selector-available-title, .selector-chosen-title {
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius-sm) var(--m-radius-sm) 0 0;
+  padding: 10px 12px;
+}
+.selector-available-title { background: var(--m-surface-2); color: var(--m-ink-2); }
+.selector-chosen-title { background: var(--m-green-100); color: var(--m-green-900); }
+.selector-chosen-title label, .selector-available-title label {
+  font-weight: 600;
+  font-size: 12.5px;
+  color: inherit;
+}
+.selector .helptext, .selector-available-title .helptext,
+.selector-chosen-title .helptext {
+  color: var(--m-muted);
+  font-weight: 400;
+  font-size: 11.5px;
+  display: block;
+  margin-top: 3px;
+}
+.selector-chosen-title .helptext { color: #3F6B57; }
+.selector select, .selector .selector-filter, .selector-chosen .list-footer-display {
+  border-color: var(--m-line);
+}
+.selector select { border-radius: 0 0 var(--m-radius-sm) var(--m-radius-sm); }
+.selector .selector-filter input { min-height: 34px; }
+.selector-add, .selector-remove, .selector-chooseall, .selector-clearall {
+  color: var(--m-green-700);
+}
+
+/* Raccourcis de date et d'heure : mêmes icônes monochromes que le reste. */
+.datetimeshortcuts .date-icon, .datetimeshortcuts .clock-icon {
+  background: none !important;
+  width: 17px;
+  height: 17px;
+}
+.datetimeshortcuts .date-icon::before, .datetimeshortcuts .clock-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--m-green-700);
+  /* Ces icônes sont des sprites de deux états empilés (24 × 48) : on cale
+     la largeur et on n'affiche que l'état du haut. */
+  -webkit-mask-size: 17px auto; mask-size: 17px auto;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center top; mask-position: center top;
+}
+.datetimeshortcuts .date-icon::before {
+  -webkit-mask-image: url(../admin/img/icon-calendar.svg);
+  mask-image: url(../admin/img/icon-calendar.svg);
+}
+.datetimeshortcuts .clock-icon::before {
+  -webkit-mask-image: url(../admin/img/icon-clock.svg);
+  mask-image: url(../admin/img/icon-clock.svg);
+}
+.datetimeshortcuts a:hover .date-icon::before,
+.datetimeshortcuts a:hover .clock-icon::before { background-color: var(--m-green-900); }
+
+/* Barre d'enregistrement : une seule casse pour tous les boutons. */
+.submit-row input, .submit-row a, .submit-row button,
+.submit-row input.default {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.submit-row a.deletelink, .submit-row .deletelink-box a {
+  background: var(--m-danger-bg);
+  color: #8E2E14;
+  border: 1px solid #E6CFC4;
+}
+.submit-row a.deletelink:hover { background: #F2DCD2; color: #7A2711; }
+
+/* Échéancier affiché sur la fiche d'inscription */
+.m-schedule { width: 100%; max-width: 640px; border-collapse: collapse; }
+.m-schedule th {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+  font-weight: 500;
+  text-align: left;
+  padding: 9px 12px;
+  background: var(--m-surface-2);
+  border-bottom: 1px solid var(--m-line);
+}
+.m-schedule td {
+  padding: 9px 12px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--m-hair);
+  font-variant-numeric: tabular-nums;
+}
+.m-schedule tfoot td {
+  font-weight: 600;
+  background: var(--m-surface-2);
+  border-bottom: 0;
+}
+
+/* --- Formules : un seul mode de facturation visible à la fois ------------ */
+/* Les feuilles de l'admin posent « display » sur fieldset ; l'attribut
+   hidden doit rester prioritaire pour que le bloc masqué le reste. */
+fieldset.m-billing[hidden] { display: none; }
+
+/* --- Grilles en ligne (frais annexes, paiements…) ------------------------ */
+/* Les champs texte de Django sont dimensionnés en « em » : dans une grille
+   à six colonnes ils débordent de la carte et rognent la colonne
+   « Supprimer ». On les borne, et la grille défile seule en dernier
+   recours plutôt que de couper une colonne. */
+.inline-group .tabular { overflow-x: auto; }
+.inline-group .tabular td .vTextField,
+.inline-group .tabular td input[type=text] {
+  width: 100%;
+  min-width: 7em;
+  max-width: 22em;
+  box-sizing: border-box;
+}
+.inline-group .tabular td select { max-width: 100%; }

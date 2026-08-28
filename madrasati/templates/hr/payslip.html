@@ -1,0 +1,123 @@
+{% extends "print_base.html" %}
+{% load i18n madrasati %}
+
+{% block title %}{% translate "Bulletin de paie" %} — {{ payslip.employee }}{% endblock %}
+{% block back_url %}{% url 'admin:hr_payslip_change' payslip.pk %}{% endblock %}
+
+{% block content %}
+  <div class="doc-title">
+    <h1>{% translate "Bulletin de paie" %}</h1>
+    <div class="ar-title ar" dir="rtl">بيان الأجر</div>
+    <div class="doc-ref">
+      <b>{{ payslip.payroll_run }}</b>
+      <i aria-hidden="true"></i>
+      <span>{{ payslip.payroll_run.get_status_display }}</span>
+    </div>
+  </div>
+
+  <div class="lines">
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Employé(e)" %} <span class="ar">— الأجير(ة)</span></div>
+        <div class="val">{{ payslip.employee }}</div>
+      </div>
+      {% if payslip.employee.first_name_ar %}
+        <div class="ar val val-ar" dir="rtl">{{ payslip.employee.first_name_ar }} {{ payslip.employee.last_name_ar }}</div>
+      {% endif %}
+    </div>
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Fonction" %} <span class="ar">— الوظيفة</span></div>
+        <div class="val">{{ payslip.employee.get_role_display }}</div>
+      </div>
+      <div class="val-ar num" style="font-size: 13.5px; color: var(--muted)">
+        {% translate "Embauché(e) le" %} {{ payslip.employee.hire_date|date:"d/m/Y" }}
+      </div>
+    </div>
+    <div class="line">
+      <div>
+        <div class="lbl">CIN <span class="ar">— ب.ت.و</span></div>
+        <div class="val num">{{ payslip.employee.cin }}</div>
+      </div>
+      <div class="val-ar">
+        <div class="lbl">{% translate "N° CNSS" %} <span class="ar">— رقم الضمان الاجتماعي</span></div>
+        <div class="val num">{{ payslip.employee.cnss_number|default:"—" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="box-h">{% translate "Détail de la rémunération" %} <span class="ar" dir="rtl">— تفصيل الأجر</span></div>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">{% translate "Rubrique" %} <span class="ar">— البيان</span></th>
+          <th scope="col" class="n">{% translate "Montant (DH)" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{% translate "Salaire brut" %} <span class="ar">— الأجر الإجمالي</span></td>
+          <td class="n">{{ payslip.gross|dirhams:2 }}</td>
+        </tr>
+        <tr>
+          <td>{% translate "CNSS — part salariale (4,48 %)" %} <span class="ar">— الضمان الاجتماعي</span></td>
+          <td class="n">− {{ payslip.cnss|dirhams:2 }}</td>
+        </tr>
+        <tr>
+          <td>{% translate "AMO — part salariale (2,26 %)" %} <span class="ar">— التأمين الإجباري عن المرض</span></td>
+          <td class="n">− {{ payslip.amo|dirhams:2 }}</td>
+        </tr>
+        <tr>
+          <td>{% translate "Salaire net imposable" %} <span class="ar">— الأجر الخاضع للضريبة</span></td>
+          <td class="n">{{ payslip.taxable|dirhams:2 }}</td>
+        </tr>
+        <tr>
+          <td>{% translate "Déduction pour charges de famille" %} <span class="ar">— خصم الأعباء العائلية</span></td>
+          <td class="n">− {{ payslip.family_deduction|dirhams:2 }}</td>
+        </tr>
+        <tr>
+          <td>{% translate "Impôt sur le revenu (IR)" %} <span class="ar">— الضريبة على الدخل</span></td>
+          <td class="n">− {{ payslip.ir|dirhams:2 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="amount">
+    <div>
+      <div class="k">{% translate "Net à payer" %} <span class="ar">— صافي الأجر المستحق</span></div>
+      <div class="v num">{{ payslip.net|dh:2 }}</div>
+    </div>
+    <div class="ar" dir="rtl" style="text-align: right">
+      <div class="k">صافي الأجر</div>
+      <div class="v-ar num">{{ payslip.net|dirhams:2 }} درهم</div>
+    </div>
+  </div>
+
+  <p class="in-words">
+    {% translate "Coût total employeur, charges patronales comprises" %} :
+    <strong class="num">{{ payslip.employer_cost|dh:2 }}</strong>.
+    {% if payslip.employee.rib %}
+      <br>{% translate "Virement sur le compte" %} <span class="num">{{ payslip.employee.rib }}</span>.
+    {% endif %}
+  </p>
+
+  <div class="spacer"></div>
+
+  <div class="signatures">
+    <div>
+      <div class="sig-space"></div>
+      <div class="sig-label">{% translate "Signature de l'employé(e)" %}<br><span class="ar">توقيع الأجير(ة)</span></div>
+    </div>
+    <div>
+      <div class="sig-space"></div>
+      <div class="sig-label">{% translate "Cachet et signature de l'école" %}<br><span class="ar">خاتم وتوقيع المدرسة</span></div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>{% translate "Document à conserver sans limitation de durée" %} — <span class="ar">وثيقة يجب الاحتفاظ بها</span></span>
+    <span class="num">{{ payslip.employee.matricule }}</span>
+  </footer>
+{% endblock %}

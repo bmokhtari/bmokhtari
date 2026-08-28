@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+{% comment %}
+Une formule ne se facture que d'une seule façon. On masque le bloc qui ne
+correspond pas au mode choisi plutôt que d'afficher deux grilles tarifaires
+concurrentes, source d'erreurs de saisie.
+{% endcomment %}
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script>
+(function () {
+  var select = document.getElementById("id_billing");
+  if (!select) { return; }
+  function sync() {
+    var annual = select.value === "annual";
+    document.querySelectorAll("fieldset.m-billing-monthly").forEach(function (el) {
+      el.hidden = annual;
+    });
+    document.querySelectorAll("fieldset.m-billing-annual").forEach(function (el) {
+      el.hidden = !annual;
+    });
+  }
+  select.addEventListener("change", sync);
+  sync();
+})();
+</script>
+{% endblock %}

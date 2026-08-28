@@ -1,0 +1,21 @@
+# Auto-hébergement : `docker compose up -d`, puis http://localhost:8000
+# La base SQLite est conservée dans le volume `data` entre redémarrages.
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "change-me-to-a-long-random-string"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DJANGO_SUPERUSER_USERNAME: "admin"
+      DJANGO_SUPERUSER_EMAIL: "admin@example.com"
+      DJANGO_SUPERUSER_PASSWORD: "change-me-admin-password"
+      SQLITE_PATH: "/app/data/db.sqlite3"
+    volumes:
+      - data:/app/data
+    restart: unless-stopped
+
+volumes:
+  data:

@@ -1,0 +1,90 @@
+{% extends "print_base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Attestation de scolarité" %} — {{ student }}{% endblock %}
+{% block sheet_class %}sheet--compact{% endblock %}
+{% block back_url %}{% url 'admin:students_enrollment_change' enrollment.pk %}{% endblock %}
+
+{% block content %}
+  <div class="doc-title">
+    <h1>{% translate "Attestation de scolarité" %}</h1>
+    <div class="ar-title ar" dir="rtl">شهادة مدرسية</div>
+    <div class="doc-ref">
+      <b>{{ enrollment.school_class.academic_year }}</b>
+      <i aria-hidden="true"></i>
+      <span class="num">{{ today|date:"d/m/Y" }}</span>
+    </div>
+  </div>
+
+  <p style="margin: 20px 0 0; line-height: 1.8">
+    {% blocktranslate trimmed with school=school.name %}
+      Le directeur de l'établissement {{ school }} atteste que l'élève dont
+      l'identité suit est régulièrement inscrit(e) pour l'année scolaire en cours :
+    {% endblocktranslate %}
+  </p>
+
+  <div class="lines">
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Nom et prénom" %} <span class="ar">— الاسم الكامل</span></div>
+        <div class="val">{{ student }}</div>
+      </div>
+      {% if student.full_name_ar %}
+        <div class="ar val val-ar" dir="rtl">{{ student.full_name_ar }}</div>
+      {% endif %}
+    </div>
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Né(e) le" %} <span class="ar">— تاريخ الازدياد</span></div>
+        <div class="val num">
+          {{ student.birth_date|date:"d/m/Y" }}{% if student.birth_place %} — {{ student.birth_place }}{% endif %}
+        </div>
+      </div>
+    </div>
+    {% if student.massar_code %}
+      <div class="line">
+        <div>
+          <div class="lbl">{% translate "Code Massar" %} <span class="ar">— رمز مسار</span></div>
+          <div class="val num">{{ student.massar_code }}</div>
+        </div>
+      </div>
+    {% endif %}
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Niveau et classe" %} <span class="ar">— المستوى والقسم</span></div>
+        <div class="val">
+          {{ enrollment.school_class.level.name_fr }}
+          <span class="num">({{ enrollment.school_class.level.code }} - {{ enrollment.school_class.name }})</span>
+        </div>
+      </div>
+      {% if enrollment.school_class.level.name_ar %}
+        <div class="ar val val-ar" dir="rtl">{{ enrollment.school_class.level.name_ar }}</div>
+      {% endif %}
+    </div>
+    <div class="line">
+      <div>
+        <div class="lbl">{% translate "Année scolaire" %} <span class="ar">— السنة الدراسية</span></div>
+        <div class="val num">{{ enrollment.school_class.academic_year }}</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="in-words">
+    {% translate "La présente attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit." %}
+  </p>
+
+  <div class="spacer"></div>
+
+  <div class="signatures">
+    <div></div>
+    <div>
+      <div class="sig-space"></div>
+      <div class="sig-label">
+        {% blocktranslate trimmed with city=school.address %}Fait à {{ city }}{% endblocktranslate %},
+        {% translate "le" %} <span class="num">{{ today|date:"d/m/Y" }}</span><br>
+        {% translate "Cachet et signature de la direction" %}<br>
+        <span class="ar">خاتم وتوقيع الإدارة</span>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% load i18n madrasati %}
+
+<section class="m-dash" aria-label="{% translate 'Résumé de l’établissement' %}">
+
+  <div class="m-tiles">
+    <div class="m-tile">
+      <div class="m-tile-k">{% translate "Élèves actifs" %}</div>
+      <div class="m-tile-v num">{{ student_count }}</div>
+      <div class="m-tile-s">{% translate "dossiers ouverts" %}</div>
+    </div>
+    <div class="m-tile">
+      <div class="m-tile-k">{% translate "Inscriptions" %}</div>
+      <div class="m-tile-v num">{{ enrollment_count }}</div>
+      <div class="m-tile-s">{% if academic_year %}{{ academic_year }}{% else %}{% translate "aucune année en cours" %}{% endif %}</div>
+    </div>
+    <div class="m-tile">
+      <div class="m-tile-k">{% translate "Classes" %}</div>
+      <div class="m-tile-v num">{{ class_count }}</div>
+      <div class="m-tile-s">{% translate "tous niveaux" %}</div>
+    </div>
+    <div class="m-tile">
+      <div class="m-tile-k">{% translate "Personnel" %}</div>
+      <div class="m-tile-v num">{{ employee_count }}</div>
+      <div class="m-tile-s">{% translate "employé(e)s actifs" %}</div>
+    </div>
+    <div class="m-tile m-tile--accent">
+      <div class="m-tile-k">{% translate "Encaissements du mois" %}</div>
+      <div class="m-tile-v num">{{ month_revenue|dh }}</div>
+      <div class="m-tile-s">{% blocktranslate with total=year_revenue|dirhams %}{{ total }} DH depuis septembre{% endblocktranslate %}</div>
+    </div>
+    <div class="m-tile{% if pending_discounts %} m-tile--flag{% endif %}">
+      <div class="m-tile-k">{% translate "Demandes de remise" %}</div>
+      <div class="m-tile-v num">
+        {% if pending_discounts %}
+          <a href="{% url 'admin:finance_discountrequest_changelist' %}?status__exact=pending">{{ pending_discounts }}</a>
+        {% else %}0{% endif %}
+      </div>
+      <div class="m-tile-s">{% translate "en attente d'approbation" %}</div>
+    </div>
+    <div class="m-tile">
+      <div class="m-tile-k">{% translate "Dernière paie" %}</div>
+      <div class="m-tile-v num">{{ last_payroll_net|dh }}</div>
+      <div class="m-tile-s">{% if last_payroll %}{{ last_payroll }} · {{ last_payroll.get_status_display }}{% else %}{% translate "aucun cycle de paie" %}{% endif %}</div>
+    </div>
+  </div>
+
+  <div class="m-cols">
+
+    <div class="m-card">
+      <div class="m-card-h">
+        <h2>{% translate "Encaissements par mois" %}</h2>
+        <span class="m-card-note">{% translate "Année scolaire" %} {{ academic_year|default:"—" }} · {% translate "en dirhams" %}</span>
+      </div>
+
+      {% if revenue_series %}
+        <div class="m-chart">
+          <div class="m-chart-plot">
+            {% for point in revenue_series %}
+              <div class="m-bar-slot{% if point.is_current %} is-current{% endif %}">
+                <div class="m-bar-track">
+                  <div class="m-bar" style="height: {{ point.pct }}%"></div>
+                  <div class="m-bar-tip" role="presentation">
+                    {{ point.label }} · {{ point.amount|dh }}
+                  </div>
+                </div>
+                <div class="m-bar-x">{{ point.label }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="m-chart-foot">
+          <div>
+            <div class="m-tile-k">{% translate "Total encaissé" %}</div>
+            <div class="m-foot-v num">{{ year_revenue|dh }}</div>
+          </div>
+          <div>
+            <div class="m-tile-k">{% translate "Moyenne mensuelle" %}</div>
+            <div class="m-foot-v num">{{ revenue_average|dh }}</div>
+          </div>
+          <div>
+            <div class="m-tile-k">{% translate "Mois le plus fort" %}</div>
+            <div class="m-foot-v">
+              {% if revenue_best %}{{ revenue_best.label }} <span class="num">· {{ revenue_best.amount|dh }}</span>{% else %}—{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <details class="m-chart-data">
+          <summary>{% translate "Voir les chiffres" %}</summary>
+          <table>
+            <caption class="m-sr">{% translate "Encaissements par mois, en dirhams" %}</caption>
+            <thead>
+              <tr><th scope="col">{% translate "Mois" %}</th><th scope="col">{% translate "Encaissé (DH)" %}</th></tr>
+            </thead>
+            <tbody>
+              {% for point in revenue_series %}
+                <tr>
+                  <th scope="row">{{ point.label }}</th>
+                  <td class="num">{{ point.amount|dirhams }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </details>
+      {% else %}
+        <p class="m-empty">{% translate "Définissez une année scolaire en cours pour suivre les encaissements." %}</p>
+      {% endif %}
+    </div>
+
+    <div class="m-card">
+      <div class="m-card-h">
+        <h2>{% translate "Mensualités en retard" %}</h2>
+        <span class="m-card-note">{% translate "au" %} {{ today|date:"d/m/Y" }}</span>
+      </div>
+      {% if late_rows %}
+        <ul class="m-list">
+          {% for row in late_rows %}
+            <li>
+              <span class="m-av" aria-hidden="true">{{ row.student.first_name|slice:":1" }}{{ row.student.last_name|slice:":1" }}</span>
+              <span class="m-list-main">
+                <a href="{% url 'admin:students_student_change' row.student.pk %}">{{ row.student }}</a>
+                <span class="m-list-sub num">{{ row.school_class.level.code }} - {{ row.school_class.name }}</span>
+              </span>
+              <span class="m-list-end">
+                <span class="m-chip m-chip--late">{{ row.months }} {% translate "mois" %}</span>
+                <span class="m-list-sub num">{{ row.amount|dh }}</span>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="m-empty">{% translate "Aucun retard de paiement. " %}</p>
+      {% endif %}
+
+      <div class="m-card-h m-card-h--mid">
+        <h2>{% translate "Derniers paiements" %}</h2>
+      </div>
+      {% if recent_payments %}
+        <ul class="m-list">
+          {% for payment in recent_payments %}
+            <li>
+              <span class="m-list-main">
+                <a href="{% url 'admin:finance_payment_change' payment.pk %}">{{ payment.enrollment.student }}</a>
+                <span class="m-list-sub num">{{ payment.receipt_number }} · {{ payment.get_kind_display }}</span>
+              </span>
+              <span class="m-list-end">
+                <span class="m-amount num">{{ payment.amount|dh }}</span>
+                <span class="m-list-sub num">{{ payment.date|date:"d/m/Y" }}</span>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="m-empty">{% translate "Aucun paiement enregistré." %}</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>

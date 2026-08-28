@@ -1,0 +1,26 @@
+# Déploiement en un clic sur Render (https://render.com)
+# Depuis le tableau de bord Render : New + → Blueprint → ce dépôt.
+services:
+  - type: web
+    name: madrasati
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "4"
+      # Compte admin créé au premier déploiement — le mot de passe généré
+      # est visible dans l'onglet « Environment » du service Render.
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: "admin"
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: "admin@example.com"
+      - key: DJANGO_SUPERUSER_PASSWORD
+        generateValue: true
